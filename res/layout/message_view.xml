@@ -1,8 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-    
-
-</LinearLayout>
+    android:layout_height="match_parent">
+    <!-- Subject Label -->
+    <TextView
+        android:id="@+id/subjectLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/subjectLabel" />
+	<!--  Subject -->
+    <TextView
+        android:id="@+id/subject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/subjectLabel"/>
+    <!-- Time Label -->
+    <TextView
+        android:id="@+id/timeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/subject"
+        android:text="@string/timeLabel"/>
+    <!-- Time -->
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/timeLabel"
+        android:layout_below="@id/subject"/>
+    <!-- Location Label -->
+    <TextView
+        android:id="@+id/locationLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/time"
+        android:text="@string/locationLabel"/>
+    <!-- Location -->
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/locationLabel"
+        android:layout_below="@id/time"/>
+    <!-- From Label -->
+    <TextView
+        android:id="@+id/fromLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/location"
+        android:text="@string/fromLabel"/>
+    <!-- From -->
+	<TextView
+        android:id="@+id/from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/fromLabel"
+        android:layout_below="@id/location"/>
+	<!-- Message -->
+	<TextView
+	    android:id="@+id/message"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/from"/>
+	
+</RelativeLayout>
