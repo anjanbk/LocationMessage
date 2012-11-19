@@ -14,8 +14,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main_view);
         
         //Testing send_message_view
-        /*Intent sendViewActivity = new Intent(this, SendMessageActivity.class);
-		startActivity(sendViewActivity);*/
+        Intent map = new Intent(this, MapLocateActivity.class);
+		startActivity(map);
     }
 
     @Override
