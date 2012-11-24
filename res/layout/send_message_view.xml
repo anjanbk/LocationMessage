@@ -1,182 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    
-    <!-- Top bar -->
-    <LinearLayout
+    android:layout_marginTop="10dp" >
+
+    <!-- Message Receipient -->
+    <TableRow
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" >
+        android:layout_marginTop="5dp"
+        android:padding="2dip" >
         
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enter message details"
-            android:textSize="20dp" />
+            android:gravity="left"
+            android:text="To:" />
 
-    </LinearLayout>
-	
-    <!-- Message details form -->
-    <TableLayout
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content" >
 
-        <!-- Message Receipient -->
-	    <TableRow
+        <EditText
+            android:id="@+id/messageTo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:singleLine="true"
+            android:maxLength="32"
+            android:hint="Receipient..." >
+        </EditText>
+        
+    </TableRow>
+    
+    <!-- Message subject -->
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:padding="2dip" >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Subject:" />
+
+
+        <EditText
+            android:id="@+id/messageSubject"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:singleLine="true"
+            android:maxLength="32"
+            android:hint="Subject..." >
+        </EditText>
+        
+    </TableRow>
+    
+    <!-- Message location -->
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:padding="2dip" >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Location:" />
+
+        <Button
+	        android:id="@+id/chooseLocationButton"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="0.75"
+	        android:gravity="left"
+	        android:text="Location: (Not selected)" />
+        
+    </TableRow>
+    
+    <!-- Message Time -->
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:padding="2dip" >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Time:" />
+
+
+        <Button
+	        android:id="@+id/chooseTime"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="0.75"
+	        android:gravity="left"
+	        android:text="Time: (Not Selected)" />
+        
+    </TableRow>
+    
+    <!-- Message body -->
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:padding="2dip" >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Message:" />
+
+        <EditText
+            android:id="@+id/messageBody"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="textMultiLine"
+	        android:lines="5"
+	        android:maxLines="5"
+	        android:singleLine="false"
+	        android:gravity="top"
+            android:hint="Message..." />
+        
+    </TableRow>
+    
+    <!-- Message Time -->
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:padding="2dip" >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="" />
+
+
+        <Button
+	        android:id="@+id/submitButton"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:layout_marginTop="5dp"
-	        android:padding="2dip" >
-	        
-	        <TextView
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:gravity="left"
-	            android:text="To:" />
-
-
-	        <EditText
-	            android:id="@+id/messageTo"
-	            android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-	            android:inputType="text"
-	            android:singleLine="true"
-	            android:maxLength="32"
-	            android:hint="Receipient..." >
-	        </EditText>
-	        
-	    </TableRow>
-	    
-	    <!-- Message subject -->
-	    <TableRow
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="5dp"
-	        android:padding="2dip" >
-	        
-	        <TextView
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:gravity="left"
-	            android:text="Subject:" />
-
-
-	        <EditText
-	            android:id="@+id/messageSubject"
-	            android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-	            android:inputType="text"
-	            android:singleLine="true"
-	            android:maxLength="32"
-	            android:hint="Subject..." >
-	        </EditText>
-	        
-	    </TableRow>
-	    
-	    <!-- Message location -->
-	    <TableRow
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="5dp"
-	        android:padding="2dip" >
-	        
-	        <TextView
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:gravity="left"
-	            android:text="Location:" />
-
-
-	        <Button
-		        android:id="@+id/chooseLocationButton"
-		        android:layout_marginLeft="20dp"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:text="Choose Location" />
-	        
-	    </TableRow>
-	    
-	    <!-- Message Time -->
-	    <TableRow
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="5dp"
-	        android:padding="2dip" >
-	        
-	        <TextView
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:gravity="left"
-	            android:text="Time:" />
-
-
-	        <EditText
-	            android:id="@+id/messageTime"
-	            android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-	            android:inputType="text"
-	            android:singleLine="true"
-	            android:maxLength="32"
-	            android:hint="Time..." >
-	        </EditText>
-	        
-	    </TableRow>
-	    
-	    <!-- Message body -->
-	    <TableRow
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="5dp"
-	        android:padding="2dip" >
-	        
-	        <TextView
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:gravity="left"
-	            android:text="Message:" />
-
-
-	        <EditText
-	            android:id="@+id/messageBody"
-	            android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-	            android:inputType="textMultiLine"
-		        android:lines="3"
-		        android:maxLines="5"
-		        android:singleLine="false"
-		        android:gravity="top"
-	            android:hint="Message..." />
-	        
-	    </TableRow>
-	    
-	    <!-- Message Time -->
-	    <TableRow
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="5dp"
-	        android:padding="2dip" >
-	        
-	        <TextView
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:gravity="left"
-	            android:text="" />
-
-
-	        <Button
-		        android:id="@+id/submitButton"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:layout_weight="1"
-		        android:text="Submit" />
-	        
-	    </TableRow>
-    </TableLayout>
-
-</LinearLayout>
+	        android:layout_weight="1"
+	        android:text="Submit" />
+        
+    </TableRow>
+    
+</TableLayout>

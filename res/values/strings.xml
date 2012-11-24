@@ -10,5 +10,6 @@
     <string name="locationLabel">Location:</string>
     <string name="fromLabel">From:</string>
     <string name="title_activity_view_message">ViewMessageActivity</string>
+    <string name="title_activity_send_message">Send Message</string>
 
 </resources>
