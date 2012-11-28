@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">KatanaLocate</string>
+    <string name="app_id">330322747075440</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
@@ -10,5 +11,6 @@
     <string name="locationLabel">Location:</string>
     <string name="fromLabel">From:</string>
     <string name="title_activity_view_message">ViewMessageActivity</string>
+    <string name="send_request">Send Request</string>
 
 </resources>

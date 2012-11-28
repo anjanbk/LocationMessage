@@ -1,5 +1,11 @@
 package com.hackrgt.katanalocate;
 
+
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -27,7 +33,23 @@ public class ViewMessageActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.message_view);
 		final TextView subject = (TextView) findViewById(R.id.subject);
-		subject.setText(FAKE_SUBJECT);
+		final Session session = Session.getActiveSession();
+		if (session != null && session.isOpened()) {
+			Request request = Request.newMeRequest(
+				      session,
+				      new Request.GraphUserCallback() {
+				        // callback after Graph API response with user object
+				        public void onCompleted(GraphUser user, Response response) {
+				          if (user != null) {
+				        	  subject.setText(user.getName());
+				          }
+				        }
+				      }
+				    );
+				    Request.executeBatchAsync(request); 
+		}
+		//final TextView subject = (TextView) findViewById(R.id.subject);
+		//subject.setText(FAKE_SUBJECT);
 		final TextView time = (TextView) findViewById(R.id.time);
 		time.setText(FAKE_TIME);
 		final TextView location = (TextView) findViewById(R.id.location);
