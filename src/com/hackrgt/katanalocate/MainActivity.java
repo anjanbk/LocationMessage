@@ -25,8 +25,8 @@ public class MainActivity extends FacebookActivity {
         this.openSession();
         
         //Testing send_message_view
-        /*Intent sendViewActivity = new Intent(this, SendMessageActivity.class);
-		startActivity(sendViewActivity);*/
+        //Intent map = new Intent(this, MapLocateActivity.class);
+		//startActivity(map);
     }
 	
 	public void createRequest(View v) {
