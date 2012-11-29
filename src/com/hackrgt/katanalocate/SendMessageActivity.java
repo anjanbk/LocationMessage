@@ -3,6 +3,8 @@ package com.hackrgt.katanalocate;
 import java.util.Calendar;
 import java.util.Formatter;
 
+import com.hackrgt.katanalocate.friendslist.FriendListActivity;
+
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -17,17 +19,19 @@ import android.widget.TimePicker;
 
 public class SendMessageActivity extends Activity implements OnClickListener, OnTimeSetListener {
 
-	private EditText messageTo, messageSubject, messageBody;
-	private Button chooseLocation, chooseTime, submitButton;
+	private EditText messageSubject, messageBody;
+	private Button chooseRecepient, chooseLocation, chooseTime, submitButton;
 	private TimePickerDialog timePicker;
 	private Calendar calendar;
+	
+	private String msgRecipientName, msgTime, msgLocation, msgSubject, msgBody, msgRecipientId;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.send_message_view);
         
-        messageTo = (EditText) findViewById(R.id.messageTo);
+        //messageTo = (EditText) findViewById(R.id.messageTo);
         messageSubject = (EditText) findViewById(R.id.messageSubject);
         //locationLabel = (TextView) findViewById(R.id.locationLabel);
         messageBody = (EditText) findViewById(R.id.messageBody);
@@ -39,6 +43,8 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
         chooseTime.setOnClickListener(this);
         submitButton = (Button) findViewById(R.id.submitButton);
         submitButton.setOnClickListener(this);
+        chooseRecepient = (Button) findViewById(R.id.receipient);
+        chooseRecepient.setOnClickListener(this);
         
         //Setup time variables
         calendar = Calendar.getInstance();
@@ -47,11 +53,18 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 	    		calendar.get(Calendar.MINUTE), false);
         
         
-        //Extract location if selected
+        //Extract variables if passed in
         Bundle extras = getIntent().getExtras();
-        String locationName;
-        if (extras != null && (locationName = extras.getString("location_name")) != null)
-            chooseLocation.setText("Choose Location: ("+locationName+")");
+        if (extras != null) { 	
+        	msgLocation = extras.getString("location_name");
+        	if (msgLocation != null)
+        		chooseLocation.setText("Choose Location: ("+msgLocation+")");
+        	
+        	msgRecipientId = extras.getString("user_id");
+        	msgRecipientName = extras.getString("user_name");
+        	if (msgRecipientName != null)
+        		chooseRecepient.setText("To: ("+msgRecipientName+")");
+        }
     }
 
     @Override
@@ -63,13 +76,9 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 	public void onClick(View view) {
 		int viewId = view.getId();
 		
-		if (viewId == submitButton.getId()) {
-			String to = messageTo.getText().toString();
-			String subject = messageSubject.getText().toString();
-			String body = messageBody.getText().toString();
-			
-			Intent activity = new Intent(this, MainActivity.class);
-			startActivity(activity);
+		if (viewId == chooseRecepient.getId()) {
+			Intent friendListActivity = new Intent(this, FriendListActivity.class);
+			startActivity(friendListActivity);
 		}
 		else if (viewId == chooseLocation.getId()) {
 			Intent mapActivity = new Intent(this, MapLocateActivity.class);
@@ -77,6 +86,13 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 		}
 		else if (viewId == chooseTime.getId()) {
 			timePicker.show();
+		}
+		else if (viewId == submitButton.getId()) {
+			String subject = messageSubject.getText().toString();
+			String body = messageBody.getText().toString();
+			
+			Intent activity = new Intent(this, MainActivity.class);
+			startActivity(activity);
 		}
 	}
 

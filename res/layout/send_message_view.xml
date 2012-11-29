@@ -18,7 +18,7 @@
             android:text="To:" />
 
 
-        <EditText
+        <!--EditText
             android:id="@+id/messageTo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -27,7 +27,15 @@
             android:singleLine="true"
             android:maxLength="32"
             android:hint="Receipient..." >
-        </EditText>
+        </EditText-->
+        
+        <Button
+	        android:id="@+id/receipient"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="0.75"
+	        android:gravity="left"
+	        android:text="To: (Not selected)" />
         
     </TableRow>
     
@@ -101,7 +109,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_weight="0.75"
 	        android:gravity="left"
-	        android:text="Time: (Not Selected)" />
+	        android:text="Time: (Not selected)" />
         
     </TableRow>
     

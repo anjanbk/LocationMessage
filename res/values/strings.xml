@@ -13,5 +13,6 @@
     <string name="title_activity_view_message">ViewMessageActivity</string>
     <string name="send_request">Send Request</string>
     <string name="title_activity_send_message">Send Message</string>
+    <string name="title_activity_friends_list">Choose Recipient</string>
 
 </resources>
