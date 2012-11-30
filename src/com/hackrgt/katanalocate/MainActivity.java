@@ -48,8 +48,8 @@ public class MainActivity extends FacebookActivity implements OnClickListener {
 		int viewId = v.getId();
 		
 		if (viewId == inboxButton.getId()) {
-			//Intent inboxActivity = new Intent(this, MapLocateActivity.class);
-			//startActivity(inboxActivity);
+			Intent inboxActivity = new Intent(this, InboxViewActivity.class);
+			startActivity(inboxActivity);
 		}
 		else if (viewId == sentMessagesButton.getId()) {
 			Intent sentMessagesActivity = new Intent(this, SentMessagesActivity.class);
