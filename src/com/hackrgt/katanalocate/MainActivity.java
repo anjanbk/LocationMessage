@@ -71,6 +71,21 @@ public class MainActivity extends FacebookActivity {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
+    
+    //
+    public void onClick(View v){}
 
+    public void buttonSendMessage(View v){
+    	 setContentView(R.layout.send_message_view);
+    }
+    public void buttonSentMessages(View v){
+   	 setContentView(R.layout.sent_messages_view);
+   }
+    public void buttonInbox(View v){
+      	 setContentView(R.layout.inbox_view);
+      }
+    public void buttonBack(View v){
+     	 setContentView(R.layout.main_view);
+     }
     
 }

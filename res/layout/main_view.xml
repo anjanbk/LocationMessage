@@ -4,15 +4,47 @@
     android:layout_height="match_parent" >
 
     <Button
-    android:id="@+id/sendRequestButton"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textStyle="bold"
-    android:gravity="center"
-    android:layout_marginTop="30dp"
-    android:onClick="createRequest"
-    android:text="@string/send_request"
-    />
-    
+        android:id="@+id/sendRequestButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:onClick="createRequest"
+        android:text="@string/send_request"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/inboxButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:onClick="buttonInbox"
+        android:text="@string/Inbox" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/inboxButton"
+        android:layout_marginTop="14dp"
+        android:gravity="center"
+        android:onClick="buttonSentMessages"
+        android:text="@string/Sent_Messages" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/button1"
+        android:layout_marginTop="28dp"
+        android:gravity="center"
+        android:onClick="buttonSendMessage"
+        android:text="@string/Send_Message" />
 
 </RelativeLayout>

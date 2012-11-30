@@ -14,5 +14,9 @@
     <string name="send_request">Send Request</string>
     <string name="title_activity_send_message">Send Message</string>
     <string name="title_activity_friends_list">Choose Recipient</string>
+    <string name="Inbox">Inbox</string>
+    <string name="Send_Message">Send_Message</string>
+    <string name="Sent_Messages">Sent_Messages</string>
+    <string name="Back">Back</string>
 
 </resources>
