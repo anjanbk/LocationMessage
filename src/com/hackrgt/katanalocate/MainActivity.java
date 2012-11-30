@@ -1,23 +1,20 @@
 package com.hackrgt.katanalocate;
 
-import com.facebook.FacebookException;
 import com.facebook.FacebookActivity;
-import com.facebook.Session;
 import com.facebook.SessionState;
-import com.facebook.widget.WebDialog;
-import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.hackrgt.katanalocate.R;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
 
-public class MainActivity extends FacebookActivity {
-    private Button sendRequestButton;
+public class MainActivity extends FacebookActivity implements OnClickListener {
+	
+    private Button inboxButton, sentMessagesButton, sendMessageButton;
+    
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,43 +24,18 @@ public class MainActivity extends FacebookActivity {
         //Testing send_message_view
         //Intent map = new Intent(this, MapLocateActivity.class);
 		//startActivity(map);
+        
+        inboxButton = (Button) findViewById(R.id.inboxButton);
+        inboxButton.setOnClickListener(this);
+        sentMessagesButton = (Button) findViewById(R.id.sentMessagesButton);
+        sentMessagesButton.setOnClickListener(this);
+        sendMessageButton = (Button) findViewById(R.id.sendMessageButton);
+        sendMessageButton.setOnClickListener(this);
     }
-	
-	public void createRequest(View v) {
-		sendRequestDialog(this);
-	}
     
     @Override
     protected void onSessionStateChange(SessionState state, Exception exception) {
     	
-    }
-    
-    private void sendRequestDialog(final Activity activity) {
-        Bundle params = new Bundle();
-        params.putString("message", "Test request");
-        WebDialog requestsDialog = (
-            new WebDialog.RequestsDialogBuilder(activity,
-                Session.getActiveSession(),
-                params))
-                .setOnCompleteListener(new OnCompleteListener() {
-                    
-                    public void onComplete(Bundle values,
-                        FacebookException error) {
-                        final String requestId = values.getString("request");
-                        if (requestId != null) {
-                            Toast.makeText(activity.getApplicationContext(), 
-                                "Request sent",  
-                                Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(activity.getApplicationContext(), 
-                                "Request cancelled", 
-                                Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                })
-                .build();
-        requestsDialog.show();
     }
 
     @Override
@@ -72,20 +44,34 @@ public class MainActivity extends FacebookActivity {
         return true;
     }
     
-    //
-    public void onClick(View v){}
+    public void onClick(View v) {
+		int viewId = v.getId();
+		
+		if (viewId == inboxButton.getId()) {
+			//Intent inboxActivity = new Intent(this, MapLocateActivity.class);
+			//startActivity(inboxActivity);
+		}
+		else if (viewId == sentMessagesButton.getId()) {
+			Intent sentMessagesActivity = new Intent(this, SentMessagesActivity.class);
+			startActivity(sentMessagesActivity);
+		}
+		else if (viewId == sendMessageButton.getId()) {
+			Intent sendMessageActivity = new Intent(this, SendMessageActivity.class);
+			startActivity(sendMessageActivity);
+		}
+	}
 
-    public void buttonSendMessage(View v){
+    /*public void buttonSendMessage(View v){
     	 setContentView(R.layout.send_message_view);
     }
     public void buttonSentMessages(View v){
-   	 setContentView(R.layout.sent_messages_view);
-   }
+    	setContentView(R.layout.sent_messages_view);
+    }
     public void buttonInbox(View v){
       	 setContentView(R.layout.inbox_view);
-      }
+    }
     public void buttonBack(View v){
-     	 setContentView(R.layout.main_view);
-     }
+    	setContentView(R.layout.main_view);
+    }*/
     
 }

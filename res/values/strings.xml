@@ -5,18 +5,19 @@
     <string name="app_id">330322747075440</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Katana Locate</string>
     <string name="subjectLabel">Subject:</string>
     <string name="timeLabel">Time:</string>
     <string name="locationLabel">Location:</string>
     <string name="fromLabel">From:</string>
-    <string name="title_activity_view_message">ViewMessageActivity</string>
+    <string name="title_activity_view_message">View Message</string>
     <string name="send_request">Send Request</string>
+    <string name="title_activity_send_message">Sent Messages</string>
     <string name="title_activity_send_message">Send Message</string>
     <string name="title_activity_friends_list">Choose Recipient</string>
     <string name="Inbox">Inbox</string>
-    <string name="Send_Message">Send_Message</string>
-    <string name="Sent_Messages">Sent_Messages</string>
+    <string name="Send_Message">Send Message</string>
+    <string name="Sent_Messages">Sent Messages</string>
     <string name="Back">Back</string>
 
 </resources>

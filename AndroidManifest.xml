@@ -27,6 +27,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="com.hackrgt.katanalocate.SentMessagesActivity"
+            android:label="@string/title_activity_send_message" >
+        </activity>
+        <activity
             android:name="com.hackrgt.katanalocate.SendMessageActivity"
             android:label="@string/title_activity_send_message" >
         </activity>
