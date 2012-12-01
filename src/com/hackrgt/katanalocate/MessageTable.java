@@ -19,6 +19,28 @@ public class MessageTable {
     	TypeID = _TypeID;
     }
     
+    public int getType()
+    {
+    	return TypeID;
+    	
+    }
+    
+    public int getTimeStamp()
+    {
+    	return TimeStamp;
+    }
+    
+    public String getText()
+    {
+    	return Content;
+    
+    }
+     
+    public String getLocation()
+    {
+    	return Location;
+    }
+    
     public int getID()
     {
     	return ID;

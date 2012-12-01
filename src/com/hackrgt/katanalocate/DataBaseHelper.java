@@ -38,6 +38,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     //Table User Column Names
     private static final String USER_USERID = "UserID";
     private static final String USER_GCMREGID = "GcmRegId";
+    private static final String USER_NAME = "UserName";
     
     //Table SendReceive Names
     private static final String SENDRECEIVE_SENDERID = "SenderID";
@@ -58,7 +59,8 @@ public class DataBaseHelper extends SQLiteOpenHelper{
                 + MESSAGE_TYPEID + "NUMERIC" + ")";
         db.execSQL(CREATE_MESSAGE_TABLE);
         String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
-                + USER_USERID + " TEXT," + USER_GCMREGID + " TEXT" + ")";
+                + USER_USERID + " TEXT," + USER_GCMREGID + " TEXT," 
+        		+ USER_NAME + " TEXT" + ")";
         db.execSQL(CREATE_USER_TABLE);
         String CREATE_SENDRECEIVE_TABLE = "CREATE TABLE " + TABLE_SENDRECEIVE + "("
                 + SENDRECEIVE_SENDERID + " TEXT," + SENDRECEIVE_RECEIVERID + " TEXT," + 
@@ -70,7 +72,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	}
     
     
-    void addUser(String UserID, String GCMRegID) {
+    public void addUser(String UserID, String GCMRegID) {
         SQLiteDatabase db = this.getWritableDatabase();
  
         ContentValues values = new ContentValues();
@@ -82,7 +84,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         db.close(); // Closing database connection
     }
     
-    String fetchUserGCMID(String UserID)
+    public String fetchUserGCMID(String UserID)
     {
     	SQLiteDatabase db = this.getReadableDatabase();
     	 
@@ -96,7 +98,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         return cursor.getString(1);
     }
     
-    List<String> fetchallUsers()
+    public List<String> fetchallUserID()
     {
     	List<String> allUsers = new ArrayList<String>();
     	String selectQuery = "SELECT " + USER_USERID + " FROM " + TABLE_USER;
@@ -114,6 +116,55 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	return allUsers;
     }
     
+    public void addMessage(MessageTable message, UserTable Sender, UserTable Receiver)
+    {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	 
+        ContentValues values = new ContentValues();
+        values.put(MESSAGE_ID, message.getID()); 
+        values.put(MESSAGE_TIMESTAMP, message.getTimeStamp()); 
+        values.put(MESSAGE_LOCATION, message.getLocation());
+        values.put(MESSAGE_SUBJECT, message.getSubject());
+        values.put(MESSAGE_TEXT, message.getText());
+        values.put(MESSAGE_TYPEID, message.getType());
+        db.insert(TABLE_USER, null, values);
+        
+        values = new ContentValues();
+        values.put(READUNREAD_MESSAGEID, message.getID()); 
+        values.put(READUNREAD_ISREAD, 0);
+        db.insert(TABLE_READUNREAD, null, values);
+        
+        values = new ContentValues();
+        values.put(SENDRECEIVE_MESSAGEID, message.getID());
+        values.put(SENDRECEIVE_SENDERID, Sender.getUserID());
+        values.put(SENDRECEIVE_RECEIVERID, Receiver.getUserID());
+        db.insert(TABLE_SENDRECEIVE, null, values);
+    }
+    
+    /*
+     * 
+     * Returns Message ID where 
+     */
+    public List<String> fillInbox(String SelfID)
+    {
+    	List<String> messageIDs = new ArrayList<String>();
+    	String selectQuery = "SELECT " + MESSAGE_ID + " FROM " + TABLE_MESSAGE + 
+    			" JOIN " + TABLE_SENDRECEIVE + " WHERE " + TABLE_SENDRECEIVE + "." + SENDRECEIVE_MESSAGEID +
+    			" = " + TABLE_MESSAGE + "." + MESSAGE_ID + " AND " + TABLE_SENDRECEIVE + "." + SENDRECEIVE_RECEIVERID +
+    			 " = " + SelfID;
+    	
+    	SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        
+        if (cursor.moveToFirst()) {
+        	do
+        	{
+        		messageIDs.add(cursor.getString(0));
+        	} while (cursor.moveToNext());
+        }
+    	
+    	return messageIDs;
+    }
     
     
     /*
