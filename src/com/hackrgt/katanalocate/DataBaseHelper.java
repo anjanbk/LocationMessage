@@ -22,6 +22,12 @@ public class DataBaseHelper extends SQLiteOpenHelper{
  
     private final Context myContext;
     
+    public static final String TABLE_MESSAGE = "Message";
+    public static final String TIME_STAMP = "TimeStamp";
+    public static final String LOCATION = "Location";
+    public static final String SUBJECT = "Subject";
+    public static final String TEXT = "Text";
+    
     /**
      * Check if the database already exist to avoid re-copying the file each time you open the application.
      * @return true if it exists, false if it doesn't
@@ -142,4 +148,18 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
  
 	}
+    
+    public Message getMessage(int id) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	 
+        Cursor cursor = db.rawQuery("SELECT U.Name, FROM Message M, SendReceive S, User U WHERE M.ID = ? " +
+        		"AND M.ID = S.MessageID AND S.SenderId = U.UserID", new String[]{new Integer(id).toString()});
+        if (cursor != null)
+            cursor.moveToFirst();
+     
+        Message message = new Message();
+        // return contact
+        return message;
+    
+    }
 }
