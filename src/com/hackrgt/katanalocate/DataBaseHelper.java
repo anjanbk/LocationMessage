@@ -17,7 +17,6 @@ import android.database.Cursor;
 import android.util.Log;
 
 public class DataBaseHelper extends SQLiteOpenHelper{
-	private static String DB_PATH = "/data/data/com/hackrgt/katanalocate/databases/";
 	 
     private static String DB_NAME = "DatabaseLocation"; // DataBase Name
     
@@ -116,6 +115,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	return allUsers;
     }
     
+
     public void addMessage(MessageTable message, UserTable Sender, UserTable Receiver)
     {
     	SQLiteDatabase db = this.getWritableDatabase();
@@ -269,6 +269,8 @@ public class DataBaseHelper extends SQLiteOpenHelper{
  
 	}
     
+=======
+>>>>>>> 377ea6a0f5dfb7f59dd5dddaba53bb7c5c260858
 	/**
      * Constructor
      * Takes and keeps a reference of the passed context in order to access to the application assets and resources.
@@ -285,4 +287,18 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
  
 	}
+    
+    public MessageTable getMessage(int id) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	 
+        Cursor cursor = db.rawQuery("SELECT M.TimeStamp, M.Location, M.Subject, M.Text, U.Name FROM Message M, SendReceive S, User U WHERE M.ID = ? " +
+        		"AND M.ID = S.MessageID AND S.SenderId = U.UserID", new String[]{new Integer(id).toString()});
+        if (cursor != null)
+            cursor.moveToFirst();
+     
+        MessageTable message = new MessageTable(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+        // return message
+        return message;
+    
+    }
 }
