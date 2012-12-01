@@ -1,14 +1,8 @@
 package com.hackrgt.katanalocate.friendslist;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.net.URI;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -23,12 +17,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 public class FacebookFriendsTask extends AsyncTask<String, Void, Boolean>{
 
 	private ProgressDialog dialog;
 	private ArrayList<Friend> friends;
 	private FriendListActivity callingActivity;
+	private final String TAG = "Facebook Friend Loader";
 	
 	public FacebookFriendsTask(Context context, FriendListActivity callingActivity) {
 		this.callingActivity = callingActivity;
@@ -57,8 +53,6 @@ public class FacebookFriendsTask extends AsyncTask<String, Void, Boolean>{
 	        
 	        String response = Util.openUrl(url, "GET", parameters);
 	        JSONObject obj = Util.parseJson(response);
-
-	        System.out.println("json Response: "+ obj.toString());
 	        JSONArray array = obj.optJSONArray("data");
 
 	        if (array != null) {
@@ -78,16 +72,11 @@ public class FacebookFriendsTask extends AsyncTask<String, Void, Boolean>{
 	            	  String id = entry.getValue();
 
 	                Friend friend = new Friend(id, name);
-	                
-	                //Get image and set bitmap
-	                /*URL imgUrl = new URL("https://graph.facebook.com/"+id+"/picture");
-	                URI imgUri = imgUrl.toURI();
-					File file = new File(imgUri.getPath());
-					Bitmap imgBitmap = decodeFile(file);
-					friend.setImgBitmap(imgBitmap);*/
+					
+					//Bitmap imgBitmap = getUserPic(friend.getId());
+					//friend.setImgBitmap(imgBitmap);
 	                
 	                friends.add(friend);
-	                System.out.println(name+" "+id);
 	            }
 	        } 
 	        
@@ -97,36 +86,19 @@ public class FacebookFriendsTask extends AsyncTask<String, Void, Boolean>{
 		return true;
 	}
 	
-	//decodes image and scales it to reduce memory consumption
-	//http://stackoverflow.com/questions/3956702/java-lang-outofmemoryerror-bitmap-size-exceeds-vm-budget
-    private Bitmap decodeFile(File f){
-        try {
-            //Decode image size
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(new FileInputStream(f),null,o);
-
-            //The new size we want to scale to
-            final int REQUIRED_SIZE=70;
-
-            //Find the correct scale value. It should be the power of 2.
-            int width_tmp=o.outWidth, height_tmp=o.outHeight;
-            int scale=1;
-            while(true){
-                if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
-                    break;
-                width_tmp/=2;
-                height_tmp/=2;
-                scale*=2;
-            }
-
-            //Decode with inSampleSize
-            BitmapFactory.Options o2 = new BitmapFactory.Options();
-            o2.inSampleSize=scale;
-            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-        } catch (FileNotFoundException e) {}
-        return null;
-    }
+	public Bitmap getUserPic(String userID) {
+	    String imageURL;
+	    Bitmap bitmap = null;
+	    Log.d(TAG, "Loading Picture");
+	    imageURL = "http://graph.facebook.com/"+userID+"/picture?type=small";
+	    try {
+	        bitmap = BitmapFactory.decodeStream((InputStream)new URL(imageURL).getContent());
+	    } catch (Exception e) {
+	        Log.d("TAG", "Loading Picture FAILED");
+	        e.printStackTrace();
+	    }
+	    return bitmap;
+	}
 	
 	protected void onPostExecute(Boolean success) {
 		dialog.hide();

@@ -1,15 +1,13 @@
 package com.hackrgt.katanalocate;
 
-import java.sql.Timestamp;
-
 /**
  * Represents a message
  *
  */
-public class Message {
+public class MessageTable {
 	
 	private int id;
-	private Timestamp dateTime;
+	private long dateTime;
 	private String location;
 	private String subject;
 	private String message;
@@ -19,7 +17,7 @@ public class Message {
 	/**
 	 * Default constructor
 	 */
-	public Message() {
+	public MessageTable() {
 		
 	}
 	
@@ -33,7 +31,7 @@ public class Message {
 	 * @param user Receiver or sender of message depending on view
 	 * @param type Determines if sent or recieved
 	 */
-	public Message(int id, Timestamp dateTime, String location, String subject, String message, String user, int type) {
+	public MessageTable(int id, long dateTime, String location, String subject, String message, String user, int type) {
 		this.id = id;
 		this.dateTime = dateTime;
 		this.location = location;
@@ -51,7 +49,7 @@ public class Message {
 	 * @param message Main content of the message
 	 * @param user Receiver or sender of message depending on view
 	 */
-	public Message(Timestamp dateTime, String location, String subject, String message, String user) {
+	public MessageTable(long dateTime, String location, String subject, String message, String user) {
 		this.dateTime = dateTime;
 		this.location = location;
 		this.subject = subject;
@@ -67,11 +65,11 @@ public class Message {
 		return this.id;
 	}
 	
-	public void setDateTime(Timestamp dateTime) {
+	public void setDateTime(long dateTime) {
 		this.dateTime = dateTime;
 	}
 	
-	public Timestamp getDateTime() {
+	public long getDateTime() {
 		return this.dateTime;
 	}
 	
