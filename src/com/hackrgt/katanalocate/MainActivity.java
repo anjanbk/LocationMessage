@@ -16,6 +16,7 @@ public class MainActivity extends FacebookActivity {
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//open a facebook session
+	
 		this.openSession();
 	    if (savedInstanceState == null) {
 	        // Add the fragment

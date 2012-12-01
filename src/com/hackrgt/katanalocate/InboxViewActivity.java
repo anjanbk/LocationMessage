@@ -37,11 +37,7 @@ public class InboxViewActivity extends Activity {// extends ListActivity {
         DisplayItems.put("Sender", "Chandim");
         DisplayItems.put("Subject", "Test Subject");
         data.add(DisplayItems);
-        DataBaseHelper dbhelper = new DataBaseHelper(this);
-        DisplayItems = new HashMap<String, String> ();
-        DisplayItems.put("Sender", "Chandim2");
-        DisplayItems.put("Subject", dbhelper.fetchUserGCMID("Chandim2"));
-        data.add(DisplayItems);
+        
         /*DisplayItems = new HashMap<String, String>();
         DisplayItems.put("Sender", "DJ");
         DisplayItems.put("Subject", "Test Subject2");
