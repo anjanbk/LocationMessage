@@ -4,6 +4,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -80,7 +82,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         db.close(); // Closing database connection
     }
     
-    String fetchUser(String UserID)
+    String fetchUserGCMID(String UserID)
     {
     	SQLiteDatabase db = this.getReadableDatabase();
     	 
@@ -93,6 +95,26 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         // return contact
         return cursor.getString(1);
     }
+    
+    List<String> fetchallUsers()
+    {
+    	List<String> allUsers = new ArrayList<String>();
+    	String selectQuery = "SELECT " + USER_USERID + " FROM " + TABLE_USER;
+    	
+    	SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        
+        if (cursor.moveToFirst()) {
+        	do
+        	{
+        		allUsers.add(cursor.getString(0));
+        	} while (cursor.moveToNext());
+        }
+    	
+    	return allUsers;
+    }
+    
+    
     
     /*
     a

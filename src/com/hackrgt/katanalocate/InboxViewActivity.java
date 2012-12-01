@@ -17,9 +17,14 @@ public class InboxViewActivity extends Activity {// extends ListActivity {
 	
 	private Map<String, String> DisplayItems;
 	private List<Map<String, String>> data;
+	private String selectedMessageID;
 	
 	private ListView InboxList;
-		
+	
+	public String getselectedMessageID()
+	{
+		return selectedMessageID;
+	}
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,8 +38,10 @@ public class InboxViewActivity extends Activity {// extends ListActivity {
         DisplayItems.put("Subject", "Test Subject");
         data.add(DisplayItems);
         DataBaseHelper dbhelper = new DataBaseHelper(this);
+        DisplayItems = new HashMap<String, String> ();
         DisplayItems.put("Sender", "Chandim2");
-        DisplayItems.put("Subject", dbhelper.fetchUser("Chandim2"));
+        DisplayItems.put("Subject", dbhelper.fetchUserGCMID("Chandim2"));
+        data.add(DisplayItems);
         /*DisplayItems = new HashMap<String, String>();
         DisplayItems.put("Sender", "DJ");
         DisplayItems.put("Subject", "Test Subject2");

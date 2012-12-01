@@ -1,5 +1,8 @@
 package com.hackrgt.katanalocate;
 
+import java.io.IOException;
+import android.util.Log;
+
 import com.facebook.FacebookActivity;
 import com.facebook.SessionState;
 import com.hackrgt.katanalocate.R;
@@ -20,10 +23,13 @@ public class MainActivity extends FacebookActivity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
         this.openSession();
+        //String token = this.getAccessToken();
         
-        //Testing send_message_view
-        //Intent map = new Intent(this, MapLocateActivity.class);
-		//startActivity(map);
+          
+        Log.d("Create: ", "Creating ..");
+        DataBaseHelper dbhelper = new DataBaseHelper(this);
+        Log.d("Insert: ", "Inserting ..");
+        dbhelper.addUser("Chandim2", "Success");
         
         inboxButton = (Button) findViewById(R.id.inboxButton);
         inboxButton.setOnClickListener(this);
