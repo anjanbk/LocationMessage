@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.Formatter;
 
 import com.hackrgt.katanalocate.friendslist.FriendListActivity;
-import com.hackrgt.katanalocate.helper.ObjectSaver;
+//import com.hackrgt.katanalocate.helper.ObjectSaver;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
@@ -40,7 +40,7 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.send_message_view);
         
-        ObjectSaver.setActivity(this);
+        //ObjectSaver.setActivity(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         editor = prefs.edit();
         //editor.putBoolean("timeSelected", false);
