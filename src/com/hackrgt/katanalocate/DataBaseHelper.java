@@ -157,7 +157,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         values.put(MESSAGE_ID, message.getId()); 
         values.put(MESSAGE_TIMESTAMP, message.getDateTime()); 
         values.put(MESSAGE_LOCATIONLAT, message.getLatitude());
-        values.put(MESSAGE_LOCATIONLONG, message.getLatitude());
+        values.put(MESSAGE_LOCATIONLONG, message.getLongitude());
         values.put(MESSAGE_SUBJECT, message.getSubject());
         values.put(MESSAGE_TEXT, message.getMessage());
         values.put(MESSAGE_TYPEID, message.getType());
@@ -184,8 +184,8 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     {
     	List<MessageTable> messages = new ArrayList<MessageTable>();
     	String selectQuery = "SELECT M.ID, M.TimeStamp, M.LocationLat, M.LocationLong, M.Subject, M.Content, U.UserName, M.TypeID" + " FROM " + 
-    			TABLE_MESSAGE + " M, " + TABLE_SENDRECEIVE + " S, " + TABLE_USER + " U " + 
-    			"WHERE M.ID = S.MessageID AND S.SenderID = U.UserID AND S.ReceiverID = \"" + SelfID + "\"";
+    			TABLE_MESSAGE + " AS M JOIN " + TABLE_SENDRECEIVE + " AS S ON M.ID = S.MessageID JOIN " + TABLE_USER + " AS U ON S.SenderID = U.UserID" + 
+    			" WHERE S.ReceiverID = \"" + SelfID + "\"";
     	Log.d("fillInbox .. ", "Query Text Created " + selectQuery);
     	SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -203,9 +203,12 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     public List<MessageTable> fillsentMessages(String SelfID)
     {
     	List<MessageTable> messages = new ArrayList<MessageTable>();
-    	String selectQuery = "SELECT M.ID, M.TimeStamp, M.LocationLat, M.LocationLong, M.Subject, M.Content, U.UserName, M.TypeID" + " FROM " + 
+    	/*String selectQuery = "SELECT M.ID, M.TimeStamp, M.LocationLat, M.LocationLong, M.Subject, M.Content, U.UserName, M.TypeID" + " FROM " + 
     			TABLE_MESSAGE + " M, " + TABLE_SENDRECEIVE + " S, " + TABLE_USER + " U " + 
-    			"WHERE M.ID = S.MessageID AND S.ReceiverID = U.UserID AND S.SenderID = \"" + SelfID + "\"";
+    			"WHERE M.ID = S.MessageID AND S.ReceiverID = U.UserID AND S.SenderID = \"" + SelfID + "\"";*/
+    	String selectQuery = "SELECT M.ID, M.TimeStamp, M.LocationLat, M.LocationLong, M.Subject, M.Content, U.UserName, M.TypeID" + " FROM " + 
+    			TABLE_MESSAGE + " AS M JOIN " + TABLE_SENDRECEIVE + " AS S ON M.ID = S.MessageID JOIN " + TABLE_USER + " AS U ON S.ReceiverID = U.UserID" + 
+    			" WHERE S.SenderID = \"" + SelfID + "\"";
     	
     	SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
