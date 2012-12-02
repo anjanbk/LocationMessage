@@ -1,15 +1,9 @@
 package com.hackrgt.katanalocate;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,7 +12,7 @@ import android.util.Log;
 
 public class DataBaseHelper extends SQLiteOpenHelper{
 	 
-    private static String DB_NAME = "DatabaseLocation"; // DataBase Name
+    public static String DB_NAME = "DatabaseLocation"; // DataBase Name
     
     //Table names
     private static final String TABLE_MESSAGE = "Message";
@@ -37,6 +31,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     //Table User Column Names
     private static final String USER_USERID = "UserID";
     private static final String USER_GCMREGID = "GcmRegId";
+    private static final String USER_NAME = "Name";
     
     //Table SendReceive Names
     private static final String SENDRECEIVE_SENDERID = "SenderID";
@@ -57,7 +52,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
                 + MESSAGE_TYPEID + "NUMERIC" + ")";
         db.execSQL(CREATE_MESSAGE_TABLE);
         String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
-                + USER_USERID + " TEXT," + USER_GCMREGID + " TEXT" + ")";
+                + USER_USERID + " TEXT," + USER_GCMREGID + " TEXT," + USER_NAME + " TEXT" + ")";
         db.execSQL(CREATE_USER_TABLE);
         String CREATE_SENDRECEIVE_TABLE = "CREATE TABLE " + TABLE_SENDRECEIVE + "("
                 + SENDRECEIVE_SENDERID + " TEXT," + SENDRECEIVE_RECEIVERID + " TEXT," + 
@@ -69,12 +64,13 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	}
     
     
-    void addUser(String UserID, String GCMRegID) {
+    void addUser(String UserID, String GCMRegID, String name) {
         SQLiteDatabase db = this.getWritableDatabase();
  
         ContentValues values = new ContentValues();
         values.put(USER_USERID, UserID); // Contact Name
         values.put(USER_GCMREGID, GCMRegID); // Contact Phone
+        values.put(USER_NAME, name);
  
         // Inserting Row
         db.insert(TABLE_USER, null, values);
@@ -130,11 +126,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
  
 	}
     
-    public MessageTable getMessage(int id) {
+    public MessageTable getMessage(String id) {
     	SQLiteDatabase db = this.getReadableDatabase();
     	 
         Cursor cursor = db.rawQuery("SELECT M.TimeStamp, M.Location, M.Subject, M.Text, U.Name FROM Message M, SendReceive S, User U WHERE M.ID = ? " +
-        		"AND M.ID = S.MessageID AND S.SenderId = U.UserID", new String[]{new Integer(id).toString()});
+        		"AND M.ID = S.MessageID AND S.SenderId = U.UserID", new String[]{id});
         if (cursor != null)
             cursor.moveToFirst();
      
