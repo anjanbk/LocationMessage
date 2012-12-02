@@ -1,14 +1,9 @@
 package com.hackrgt.katanalocate;
 
 
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.model.GraphUser;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.Intent;
 import android.view.Menu;
 import android.widget.TextView;
 
@@ -25,47 +20,26 @@ public class ViewMessageActivity extends Activity {
 	 */
 	private int MessageId;
 	private MessageTable message;
-	private static final String FAKE_SUBJECT = "This is a fake message subject";
-	private static final String FAKE_TIME = "10:30";
-	private static final String FAKE_LOCATION = "Georgia Tech TSRB";
-	private static final String FAKE_SENDER = "Not a real sender";
-	private static final String FAKE_MESSAGE = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus mi lectus, vehicula et commodo eu, sagittis ut risus. Nullam erat urna, elementum eget lobortis at, rutrum eget est. Donec interdum, erat eu tristique porta, felis neque euismod libero, non bibendum sapien mi quis leo.";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.message_view);
-		final TextView subject = (TextView) findViewById(R.id.subject);
-		final Session session = Session.getActiveSession();
-		if (session != null && session.isOpened()) {
-			Request request = Request.newMeRequest(
-				      session,
-				      new Request.GraphUserCallback() {
-				        // callback after Graph API response with user object
-				        public void onCompleted(GraphUser user, Response response) {
-				          if (user != null) {
-				        	  subject.setText(user.getName());
-				          }
-				        }
-				      }
-				    );
-				    Request.executeBatchAsync(request); 
-		}
-		
 		Bundle extras = getIntent().getExtras();
 		MessageId = extras.getInt("MessageID");
+		int type = extras.getInt("sentreceive");
 		DataBaseHelper dbhelper = new DataBaseHelper(this);
-		message = dbhelper.getMessage(MessageId, 1);
-		//final TextView subject = (TextView) findViewById(R.id.subject);
-		//subject.setText(FAKE_SUBJECT);
+		message = dbhelper.getMessage(MessageId, type);
+		final TextView subject = (TextView) findViewById(R.id.subject);
+		subject.setText(message.getSubject());
 		final TextView time = (TextView) findViewById(R.id.time);
-		time.setText(FAKE_TIME);
+		time.setText(Long.toString(message.getDateTime()));
 		final TextView location = (TextView) findViewById(R.id.location);
-		location.setText(Integer.toString(MessageId));
+		location.setText(message.getLatitude() + " " + message.getLongitude());
 		final TextView from = (TextView) findViewById(R.id.from);
-		from.setText(FAKE_SENDER);
-		final TextView message = (TextView) findViewById(R.id.message);
-		message.setText("\n" + FAKE_MESSAGE);
+		from.setText(message.getUser());
+		final TextView messageText = (TextView) findViewById(R.id.message);
+		messageText.setText("\n" + message.getMessage());
 	}
 
 	@Override
