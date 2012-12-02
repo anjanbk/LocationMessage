@@ -96,16 +96,16 @@ public class MapLocateActivity extends MapActivity implements OnClickListener {
 	    mapView = (MapView) findViewById(R.id.mapview);
 	    mapView.setBuiltInZoomControls(true);
 	    
-	    Drawable drawable = this.getResources().getDrawable(R.drawable.pin);
-	    mapView.getOverlays().add(new MapItemizedOverlay(drawable));
+	    // Center location on current position
+        List<Overlay> overlays = mapView.getOverlays();
+        
 	    myLocOverlay=new MyLocationOverlay(this, mapView);
 	    mapView.getOverlays().add(myLocOverlay);
-        
-        // Center location on current position
-        List<Overlay> overlays = mapView.getOverlays();
-        myLocOverlay = new MyLocationOverlay(this, mapView);
+	    
+	    Drawable drawable = this.getResources().getDrawable(R.drawable.pin);
+	    itemizedOverlay = new MapItemizedOverlay(drawable, this);
+	    mapView.getOverlays().add(itemizedOverlay);
 
-        /**Changes*******************/
         /*Drawable drawable = this.getResources().getDrawable(R.drawable.map_marker_icon);
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
         Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 64, 64, true));
@@ -126,10 +126,6 @@ public class MapLocateActivity extends MapActivity implements OnClickListener {
         doneButton = (Button) findViewById(R.id.doneButton);
         doneButton.setOnClickListener(this);
         
-        
-        /**End of Changes*******************/
-        
-        overlays.add(myLocOverlay);
         
         myLocOverlay.runOnFirstFix(new Runnable() {
         	public void run() {
