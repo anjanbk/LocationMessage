@@ -3,11 +3,18 @@ package com.hackrgt.katanalocate;
 public class UserTable {
 	private String UserID;
     private String GcmRegId;
+    private String Name;
     
-    public UserTable(String A, String B)
+    public String getName()
     {
-    	UserID = A;
-    	GcmRegId = B;
+    	return Name;
+    }
+    
+    public UserTable(String userid, String gcmid, String name)
+    {
+    	UserID = userid;
+    	GcmRegId = gcmid;
+    	Name = name;
     }
     
     public UserTable()

@@ -31,7 +31,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     //Table User Column Names
     private static final String USER_USERID = "UserID";
     private static final String USER_GCMREGID = "GcmRegId";
-    private static final String USER_NAME = "Name";
+    private static final String USER_NAME = "UserName";
     
     //Table SendReceive Names
     private static final String SENDRECEIVE_SENDERID = "SenderID";
@@ -53,6 +53,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         db.execSQL(CREATE_MESSAGE_TABLE);
         String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
                 + USER_USERID + " TEXT," + USER_GCMREGID + " TEXT," + USER_NAME + " TEXT" + ")";
+
         db.execSQL(CREATE_USER_TABLE);
         String CREATE_SENDRECEIVE_TABLE = "CREATE TABLE " + TABLE_SENDRECEIVE + "("
                 + SENDRECEIVE_SENDERID + " TEXT," + SENDRECEIVE_RECEIVERID + " TEXT," + 
@@ -64,7 +65,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	}
     
     
-    void addUser(String UserID, String GCMRegID, String name) {
+    public void addUser(String UserID, String GCMRegID, String name) {
         SQLiteDatabase db = this.getWritableDatabase();
  
         ContentValues values = new ContentValues();
@@ -77,7 +78,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         db.close(); // Closing database connection
     }
     
-    String fetchUserGCMID(String UserID)
+    public String fetchUserGCMID(String UserID)
     {
     	SQLiteDatabase db = this.getReadableDatabase();
     	 
@@ -91,7 +92,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         return cursor.getString(1);
     }
     
-    List<String> fetchallUsers()
+    public List<String> fetchallUserID()
     {
     	List<String> allUsers = new ArrayList<String>();
     	String selectQuery = "SELECT " + USER_USERID + " FROM " + TABLE_USER;
@@ -109,6 +110,185 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	return allUsers;
     }
     
+
+    public void addMessage(MessageTable message, UserTable Sender, UserTable Receiver)
+    {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	 
+        ContentValues values = new ContentValues();
+        values.put(MESSAGE_ID, message.getId()); 
+        values.put(MESSAGE_TIMESTAMP, message.getDateTime()); 
+        values.put(MESSAGE_LOCATION, message.getLocation());
+        values.put(MESSAGE_SUBJECT, message.getSubject());
+        values.put(MESSAGE_TEXT, message.getMessage());
+        values.put(MESSAGE_TYPEID, message.getType());
+        db.insert(TABLE_USER, null, values);
+        
+        values = new ContentValues();
+        values.put(READUNREAD_MESSAGEID, message.getId()); 
+        values.put(READUNREAD_ISREAD, 0);
+        db.insert(TABLE_READUNREAD, null, values);
+        
+        values = new ContentValues();
+        values.put(SENDRECEIVE_MESSAGEID, message.getId());
+        values.put(SENDRECEIVE_SENDERID, Sender.getUserID());
+        values.put(SENDRECEIVE_RECEIVERID, Receiver.getUserID());
+        db.insert(TABLE_SENDRECEIVE, null, values);
+    }
+    
+    /*
+     * 
+     * Returns Message ID where 
+     */
+    public List<MessageTable> fillInbox(String SelfID)
+    {
+    	List<MessageTable> messages = new ArrayList<MessageTable>();
+    	String selectQuery = "SELECT M.ID, M.TimeStamp, M.Location, M.Subject, M.Text, U.Name, M.TypeID" + " FROM " + 
+    			TABLE_MESSAGE + " M, " + TABLE_SENDRECEIVE + " S, " + TABLE_USER + " U, " + 
+    			"WHERE M.ID = S.MessageID AND S.SenderID = U.UserID AND S.ReceiverID = " + SelfID;
+    	
+    	SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        
+        if (cursor.moveToFirst()) {
+        	do
+        	{
+        		messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getInt(6)));
+        	} while (cursor.moveToNext());
+        }
+    	
+    	return messages;
+    }
+    
+    
+    public List<MessageTable> fillsentMessages(String SelfID)
+    {
+    	List<MessageTable> messages = new ArrayList<MessageTable>();
+    	String selectQuery = "SELECT M.ID, M.TimeStamp, M.Location, M.Subject, M.Text, U.Name, M.TypeID" + " FROM " + 
+    			TABLE_MESSAGE + " M, " + TABLE_SENDRECEIVE + " S, " + TABLE_USER + " U, " + 
+    			"WHERE M.ID = S.MessageID AND S.ReceiverID = U.UserID AND S.SenderID = " + SelfID;
+    	
+    	SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        
+        if (cursor.moveToFirst()) {
+        	do
+        	{
+        		messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getInt(6)));
+        	} while (cursor.moveToNext());
+        }
+    	
+    	return messages;
+    }
+    
+    
+    
+    //public 
+    
+    /*
+    a
+    /**
+     * Check if the database already exist to avoid re-copying the file each time you open the application.
+     * @return true if it exists, false if it doesn't
+     
+    private boolean checkDataBase(){
+    	SQLiteDatabase checkDB = null;
+ 
+    	try{
+    		String myPath = DB_PATH + DB_NAME;
+    		checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+    	}catch(SQLiteException e){
+ 
+    		//database does't exist yet.
+ 
+    	}
+ 
+    	if(checkDB != null){
+ 
+    		checkDB.close();
+ 
+    	}
+ 
+    	return checkDB != null ? true : false;
+    }
+    
+    /**
+     * Creates a empty database on the system and rewrites it with your own database.
+     * 
+    public void createDataBase() throws IOException{
+ 
+    	boolean dbExist = checkDataBase();
+ 
+    	if(dbExist){
+    		//do nothing - database already exist
+    	}else{
+ 
+    		//By calling this method and empty database will be created into the default system path
+               //of your application so we are gonna be able to overwrite that database with our database.
+        	this.getReadableDatabase();
+ 
+        	try {
+ 
+    			copyDataBase();
+ 
+    		} catch (IOException e) {
+ 
+        		throw new Error("Error copying database");
+ 
+        	}
+    	}
+ 
+    }
+    
+    /**
+     * Copies your database from your local assets-folder to the just created empty database in the
+     * system folder, from where it can be accessed and handled.
+     * This is done by transfering bytestream.
+     * 
+    private void copyDataBase() throws IOException{
+ 
+    	//Open your local db as the input stream
+    	InputStream myInput = myContext.getAssets().open(DB_NAME);
+ 
+    	// Path to the just created empty db
+    	String outFileName = DB_PATH + DB_NAME;
+ 
+    	//Open the empty db as the output stream
+    	OutputStream myOutput = new FileOutputStream(outFileName);
+ 
+    	//transfer bytes from the inputfile to the outputfile
+    	byte[] buffer = new byte[1024];
+    	int length;
+    	while ((length = myInput.read(buffer))>0){
+    		myOutput.write(buffer, 0, length);
+    	}
+ 
+    	//Close the streams
+    	myOutput.flush();
+    	myOutput.close();
+    	myInput.close();
+ 
+    }
+	
+    public void openDataBase() throws SQLException{
+    	 
+    	//Open the database
+        String myPath = DB_PATH + DB_NAME;
+    	myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+ 
+    }
+ 
+    @Override
+	public synchronized void close() {
+ 
+    	    if(myDataBase != null)
+    		    myDataBase.close();
+    	    super.close();
+ 
+	}
+    
+=======
+>>>>>>> 377ea6a0f5dfb7f59dd5dddaba53bb7c5c260858
 	/**
      * Constructor
      * Takes and keeps a reference of the passed context in order to access to the application assets and resources.
