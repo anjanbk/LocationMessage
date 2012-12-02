@@ -12,6 +12,7 @@ import com.hackrgt.katanalocate.SendMessageActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,6 +26,7 @@ public class FriendListActivity extends Activity implements OnItemClickListener 
 	private ArrayList<Friend> friends;
 	private ArrayList<String> appUsersId;
 	private DataBaseHelper dbHelper;
+	private Location location;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,11 @@ public class FriendListActivity extends Activity implements OnItemClickListener 
 			String url = "https://graph.facebook.com/me/friends";
 			fbFriends.execute(new String[] {token, url});
 		}
+		
+		//Extract location is passed in
+        Bundle extras = getIntent().getExtras();
+		if (extras != null)
+        	location = (Location) extras.getParcelable("location");
 	}
 	
 	public void getFacebookFriendsResult(ArrayList<Friend> friends) {
@@ -76,6 +83,7 @@ public class FriendListActivity extends Activity implements OnItemClickListener 
 			Intent sendMsgActivity = new Intent(this, SendMessageActivity.class);
 			sendMsgActivity.putExtra("user_id", friend.getId());
 			sendMsgActivity.putExtra("user_name", friend.getName());
+			sendMsgActivity.putExtra("location", location);
 			startActivity(sendMsgActivity);
 		}
 		else {

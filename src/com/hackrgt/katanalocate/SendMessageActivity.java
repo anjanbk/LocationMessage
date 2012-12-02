@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 public class SendMessageActivity extends Activity implements OnClickListener, OnTimeSetListener {
@@ -43,7 +42,7 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 	
 	private SharedPreferences prefs;
 	private Editor editor;
-	private String msgRecipientId, msgRecipientName, msgSubject, msgLocation, msgBody;
+	private String msgRecipientId, msgRecipientName, msgSubject, msgBody;
 	private Location location;
 	
 	private final String STORED_TIME_FLAG = "timeSelected";
@@ -85,7 +84,6 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
         //Extract variables if passed in
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-        	msgLocation = extras.getString("location_name");
         	location = (Location) extras.getParcelable("location");
         	if (location != null) {
         		String address = getAddress(location);
@@ -140,10 +138,12 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 		
 		if (viewId == chooseRecepient.getId()) {
 			Intent friendListActivity = new Intent(this, FriendListActivity.class);
+			friendListActivity.putExtra("location", location);
 			startActivity(friendListActivity);
 		}
 		else if (viewId == chooseLocation.getId()) {
 			Intent mapActivity = new Intent(this, MapLocateActivity.class);
+			mapActivity.putExtra("location", location);
 			startActivity(mapActivity);
 		}
 		else if (viewId == chooseTime.getId()) {
@@ -190,13 +190,17 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 		int type = 0;
 		
 		//Get location
-		String locLat = null;
-		String locLong = null;
-		if (prefs.getBoolean(STORED_LOCATION_FLAG, false)) {
+		double locLat = 0;
+		double locLong = 0;
+		/*if (prefs.getBoolean(STORED_LOCATION_FLAG, false)) {
 			//msgLocation = prefs.getString("locName", null);
 			locLat = prefs.getString("locLat", null);
 			locLat = prefs.getString("locLong", null);
 			type = 1;
+		}*/
+		if (location != null) {
+			locLat = location.getLatitude();
+			locLong = location.getLongitude();
 		}
 		
 		//Get time
@@ -273,7 +277,6 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 			Request request = Request.newMeRequest(
 				      session,
 				      new Request.GraphUserCallback() {
-				    	String id = null;
 				        // callback after Graph API response with user object
 				        public void onCompleted(GraphUser user, Response response) {
 				          if (user != null) {
