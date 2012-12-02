@@ -9,8 +9,8 @@ public class MessageTable {
     
 	private int id;
 	private long dateTime;
-	private String locLat;
-	private String locLong;
+	private double locLat;
+	private double locLong;
 	private String subject;
 	private String message;
 	private String user;
@@ -26,7 +26,7 @@ public class MessageTable {
 	 * @param user Receiver or sender of message depending on view
 	 * @param type Determines if sent or recieved
 	 */
-	public MessageTable(int id, long dateTime, String locLat, String locLong, String subject, String message, String user, int type) {
+	public MessageTable(int id, long dateTime, double locLat, double locLong, String subject, String message, String user, int type) {
 		this.id = id;
 		this.dateTime = dateTime;
 		this.locLat = locLat;
@@ -45,7 +45,7 @@ public class MessageTable {
 	 * @param message Main content of the message
 	 * @param user Receiver or sender of message depending on view
 	 */
-	public MessageTable(long dateTime, String locLat, String locLong, String subject, String message, String user) {
+	public MessageTable(long dateTime, double locLat, double locLong, String subject, String message, String user) {
 		this.dateTime = dateTime;
 		this.locLat = locLat;
 		this.locLong = locLong;
@@ -63,7 +63,7 @@ public class MessageTable {
 	 * @param message Main content of the message
 	 * @param type Determines if sent or recieved
 	 */
-	public MessageTable(int id, long dateTime, String locLat, String locLong, String subject, String message, int type) {
+	public MessageTable(int id, long dateTime, double locLat, double locLong, String subject, String message, int type) {
 		this.id = id;
 		this.dateTime = dateTime;
 		this.locLat = locLat;
@@ -121,19 +121,19 @@ public class MessageTable {
 		return this.type;
 	}
 
-	public String getLatitude() {
+	public double getLatitude() {
 		return locLat;
 	}
 
-	public void setLatitude(String locLat) {
+	public void setLatitude(double locLat) {
 		this.locLat = locLat;
 	}
 
-	public String getLongitude() {
+	public double getLongitude() {
 		return locLong;
 	}
 
-	public void setLongitude(String locLong) {
+	public void setLongitude(double locLong) {
 		this.locLong = locLong;
 	}
 
