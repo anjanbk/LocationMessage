@@ -251,9 +251,10 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 			e.printStackTrace();
 		}
 		Address address = null;
-        if (list != null & list.size() > 0)
+        if (list != null && list.size() > 0)
             address = list.get(0);
         
+        //address.getMaxAddressLineIndex()
         if (address == null)
         	return "unknown Address!";
         else
