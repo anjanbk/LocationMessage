@@ -3,8 +3,11 @@ package com.hackrgt.katanalocate;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.AdapterView.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +15,12 @@ import java.util.List;
 import java.util.Map;
 //import java.util.Vector;
 
-public class InboxViewActivity extends Activity {// extends ListActivity {
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
+
+public class InboxViewActivity extends Activity implements OnItemClickListener {// extends ListActivity {
 
 	
 	private Map<String, String> DisplayItems;
@@ -32,11 +40,12 @@ public class InboxViewActivity extends Activity {// extends ListActivity {
         
         InboxList = (ListView) findViewById(R.id.InboxList);
         
-        DisplayItems = new HashMap<String, String>();
         data = new ArrayList<Map<String, String>>();
-        DisplayItems.put("Sender", "Chandim");
-        DisplayItems.put("Subject", "Test Subject");
-        data.add(DisplayItems);
+        
+        final DataBaseHelper dbhelper = new DataBaseHelper(this);
+        //final List<MessageTable> messages = new ArrayList<MessageTable>();
+        final List<MessageTable> messages = new ArrayList();
+        
         
         /*DisplayItems = new HashMap<String, String>();
         DisplayItems.put("Sender", "DJ");
@@ -45,9 +54,11 @@ public class InboxViewActivity extends Activity {// extends ListActivity {
         
         SimpleAdapter adapter = new SimpleAdapter(this, data, android.R.layout.simple_list_item_2, new String[] {"Sender", "Subject"}, new int[] {android.R.id.text1, android.R.id.text2});
         InboxList.setAdapter(adapter);
-        
-        
-        //DisplaySets = new Vector<DisplayItems>();
-        //DisplaySets.add(new DisplayItems("Chandim", "Test Message"));
     }
+
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
