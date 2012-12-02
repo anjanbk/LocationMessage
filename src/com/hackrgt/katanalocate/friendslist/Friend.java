@@ -11,6 +11,7 @@ public class Friend {
 	public Friend(String id, String name) {
 		this.id = id;
 		this.name = name;
+		isAppUser = false;
 	}
 
 	public String getId() {

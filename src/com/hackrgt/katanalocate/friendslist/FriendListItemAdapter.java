@@ -51,7 +51,7 @@ public class FriendListItemAdapter extends ArrayAdapter<Friend> {
 				
 			}
 			
-			if (friendIsAppUser(friend) || position <= 2) {
+			if (friendIsAppUser(friend)) {
 				//System.out.println(friend.getName()+" has the app");
 				friend.setAppUser(true);
 				
@@ -76,7 +76,7 @@ public class FriendListItemAdapter extends ArrayAdapter<Friend> {
 
 	private boolean friendIsAppUser(Friend friend) {
 		for (String id : appUsersId)
-			if (friend.getId().equals(id))
+			if (id.equals(friend.getId()))
 				return true;
 		//Return false if no matches found
 		return false;
