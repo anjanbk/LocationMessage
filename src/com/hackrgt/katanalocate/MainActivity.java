@@ -1,8 +1,13 @@
 package com.hackrgt.katanalocate;
 
+import java.io.File;
+
 import com.facebook.FacebookActivity;
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.model.GraphUser;
 import com.hackrgt.katanalocate.R;
 
 import android.os.Bundle;
@@ -59,6 +64,33 @@ public class MainActivity extends FacebookActivity {
             	//Default to SSO login and show dialog if Facebook App isnt installed
             	this.openSession();
             }
+        }
+        
+        if (state.isOpened()) {
+        	//Get database and check if it has been created
+        	File database = getApplicationContext().getDatabasePath("DatabaseLocation");
+        	if (!database.exists()) {
+        		//Get users Facebook Id
+        		final Session session = Session.getActiveSession();
+        		if (session != null && session.isOpened()) {
+        			Request request = Request.newMeRequest(
+        					session,
+        					new Request.GraphUserCallback() {
+        						// callback after Graph API response with user object
+        						public void onCompleted(GraphUser user, Response response) {
+        							if (user != null) {
+        								final String userId = user.getId();
+        								final String userName = user.getName();
+        								//Add the user to the sqlite database
+        								DataBaseHelper helper = new DataBaseHelper(MainActivity.this);
+        								helper.addUser(userId, "", userName);
+        							}
+        						}
+        					}
+        					);
+        			Request.executeBatchAsync(request); 
+        		}
+        	}
         }
     }
     
