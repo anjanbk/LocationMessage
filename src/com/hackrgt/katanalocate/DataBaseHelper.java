@@ -121,6 +121,33 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	return allUsers;
     }
     
+    public void sendMessage(MessageTable message, String SenderID, String ReceiverID)
+    {
+    	SQLiteDatabase db = this.getWritableDatabase();
+   	 
+        ContentValues values = new ContentValues();
+        values.put(MESSAGE_ID, message.getId()); 
+        values.put(MESSAGE_TIMESTAMP, message.getDateTime()); 
+        values.put(MESSAGE_LOCATIONLAT, message.getLatitude());
+        values.put(MESSAGE_LOCATIONLONG, message.getLatitude());
+        values.put(MESSAGE_SUBJECT, message.getSubject());
+        values.put(MESSAGE_TEXT, message.getMessage());
+        values.put(MESSAGE_TYPEID, message.getType());
+        db.insert(TABLE_MESSAGE, null, values);
+        
+        values = new ContentValues();
+        values.put(READUNREAD_MESSAGEID, message.getId()); 
+        values.put(READUNREAD_ISREAD, 1);
+        db.insert(TABLE_READUNREAD, null, values);
+        
+        values = new ContentValues();
+        values.put(SENDRECEIVE_MESSAGEID, message.getId());
+        values.put(SENDRECEIVE_SENDERID, SenderID);
+        values.put(SENDRECEIVE_RECEIVERID, ReceiverID);
+        db.insert(TABLE_SENDRECEIVE, null, values);
+        Log.d("Add Message .. ", "Successfully added message");
+    	
+    }
 
     public void addMessage(MessageTable message, UserTable Sender, UserTable Receiver)
     {

@@ -89,7 +89,7 @@ public class SentMessagesActivity extends Activity {
 		Intent viewMessageActivity = new Intent(this, ViewMessageActivity.class);
 		Log.d("William Part", Integer.toString(MessageId));
 		viewMessageActivity.putExtra("MessageID", MessageId);
-		viewMessageActivity.putExtra("sentreceive", 0);
+		viewMessageActivity.putExtra("sentreceive", 1);
 		startActivity(viewMessageActivity);
 	}
 

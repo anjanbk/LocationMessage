@@ -40,9 +40,11 @@ public class MainActivity extends FacebookActivity {
 	    dbhelper.addUser("Chandim", "Chandim", "Success");
 	    dbhelper.addUser("Diya", "Diya", "Dummy");
 	    MessageTable message = new MessageTable(1, 5, 36, 54, "Troll", "Troll", "Diya", 2);
+	    MessageTable message2 = new MessageTable(2, 5, 36, 54, "Troll2", "Troll2", "Diya", 2);
 	    UserTable Receiver = new UserTable("Chandim", "Chandim", "Success");
 	    UserTable Sender = new UserTable("Diya", "Diya", "Dummy");
 	    dbhelper.addMessage(message, Sender, Receiver);
+	    dbhelper.addMessage(message2, Receiver, Sender);
 	    dbhelper.checkMessage();
 	    dbhelper.checkUser();
 	    dbhelper.checkSendReceive();
