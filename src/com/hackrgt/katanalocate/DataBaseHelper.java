@@ -193,7 +193,28 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	return messages;
     }
     
-    
+    public MessageTable getMessage(int MessageId, int sentreceive)
+    {
+    	String selectQuery;
+    	if (sentreceive == 1){
+	    	selectQuery = "SELECT M.ID, M.TimeStamp, M.LocationLat, M.LocationLong, M.Subject, M.Content, U.UserName, M.TypeID" + " FROM " + 
+	    			TABLE_MESSAGE + " M, " + TABLE_SENDRECEIVE + " S, " + TABLE_USER + " U " + 
+	    			"WHERE M.ID = S.MessageID AND S.ReceiverID = U.UserID AND M.ID = " + MessageId;
+    	}
+    	else
+    	{
+    		selectQuery = "SELECT M.ID, M.TimeStamp, M.LocationLat, M.LocationLong, M.Subject, M.Content, U.UserName, M.TypeID" + " FROM " + 
+	    			TABLE_MESSAGE + " M, " + TABLE_SENDRECEIVE + " S, " + TABLE_USER + " U " + 
+	    			"WHERE M.ID = S.MessageID AND S.SenderID = U.UserID AND M.ID = " + MessageId;
+    	}
+    	Log.d("Chandim-Database", selectQuery);
+    	SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        Log.d("Chandim-Database", Integer.toString(cursor.getCount()));
+        cursor.moveToFirst();
+        MessageTable message = new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getInt(7));
+        return message;
+    }
     
     //public 
     

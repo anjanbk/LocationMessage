@@ -8,6 +8,7 @@ import com.facebook.model.GraphUser;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
 import android.widget.TextView;
 
@@ -22,6 +23,8 @@ public class ViewMessageActivity extends Activity {
 	 * Fake data for subject, time, location, sender, and message to populate
 	 * fields
 	 */
+	private int MessageId;
+	private MessageTable message;
 	private static final String FAKE_SUBJECT = "This is a fake message subject";
 	private static final String FAKE_TIME = "10:30";
 	private static final String FAKE_LOCATION = "Georgia Tech TSRB";
@@ -48,12 +51,17 @@ public class ViewMessageActivity extends Activity {
 				    );
 				    Request.executeBatchAsync(request); 
 		}
+		
+		Bundle extras = getIntent().getExtras();
+		MessageId = extras.getInt("MessageID");
+		DataBaseHelper dbhelper = new DataBaseHelper(this);
+		message = dbhelper.getMessage(MessageId, 1);
 		//final TextView subject = (TextView) findViewById(R.id.subject);
 		//subject.setText(FAKE_SUBJECT);
 		final TextView time = (TextView) findViewById(R.id.time);
 		time.setText(FAKE_TIME);
 		final TextView location = (TextView) findViewById(R.id.location);
-		location.setText(FAKE_LOCATION);
+		location.setText(Integer.toString(MessageId));
 		final TextView from = (TextView) findViewById(R.id.from);
 		from.setText(FAKE_SENDER);
 		final TextView message = (TextView) findViewById(R.id.message);

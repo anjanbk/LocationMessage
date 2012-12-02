@@ -11,41 +11,33 @@ import com.facebook.model.GraphUser;
 import com.facebook.Session;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
 import android.widget.SimpleAdapter;
+import android.widget.AdapterView.OnItemClickListener;
 import android.os.Bundle;
 
-public class SentMessagesActivity extends Activity implements OnClickListener {
+public class SentMessagesActivity extends Activity {
     
 	private Map<String, String> DisplayItems;
 	private List<Map<String, String>> data;
     private ListView sentMessagesList;
-    private ArrayList<String> itemArray;
-    private ArrayList<String> itemArray2;
-    private ArrayAdapter<String> itemAdapter;
     final DataBaseHelper dbhelper = new DataBaseHelper(this);
     
 	List<MessageTable> messages;
-	private String Id = null;
     
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sent_messages_view);
-
-        
-     
-        itemArray = new ArrayList<String>();
-        itemArray.clear();
-        itemArray2 = new ArrayList<String>();
-        itemArray2.clear();
-        
-        itemAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,itemArray);
        
+        sentMessagesList = (ListView) findViewById(R.id.sentMessagesList);
+        data = new ArrayList<Map<String, String>>();
         
         final Session session = Session.getActiveSession();
 		if (session != null && session.isOpened()) {
@@ -56,7 +48,6 @@ public class SentMessagesActivity extends Activity implements OnClickListener {
 				        public void onCompleted(GraphUser user, Response response) {
 				          if (user != null) {
 				        	  Log.d("SentMessagesActivity", "Facebook ID:" + user.getId());
-				        	  Id = user.getId();
 				        	  messages = dbhelper.fillsentMessages("Chandim");
 				          	  
 				        	  for (MessageTable msg: messages)
@@ -75,19 +66,31 @@ public class SentMessagesActivity extends Activity implements OnClickListener {
 				    );
 				    Request.executeBatchAsync(request); 
 		} 
-
-        itemAdapter.notifyDataSetChanged();
 	}
 
 	public void populatelistview()
 	{
 		SimpleAdapter adapter = new SimpleAdapter(this, data, android.R.layout.simple_list_item_2, new String[] {"Sender", "Subject"}, new int[] {android.R.id.text1, android.R.id.text2});
-		sentMessagesList.setAdapter(adapter);
+        sentMessagesList.setAdapter(adapter);
+        sentMessagesList.setOnItemClickListener(new OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+				int MessageId = messages.get((int) id).getId();
+				switchactivities(MessageId);
+				//Toast.makeText(getBaseContext(), MessageSubject, Toast.LENGTH_LONG).show();
+			}
+        	
+        });
 	}
 	
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		
+	public void switchactivities(int MessageId)
+	{
+		Intent viewMessageActivity = new Intent(this, ViewMessageActivity.class);
+		Log.d("William Part", Integer.toString(MessageId));
+		viewMessageActivity.putExtra("MessageID", MessageId);
+		viewMessageActivity.putExtra("sentreceive", 0);
+		startActivity(viewMessageActivity);
 	}
 
 }

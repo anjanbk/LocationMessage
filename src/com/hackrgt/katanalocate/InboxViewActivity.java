@@ -2,6 +2,7 @@ package com.hackrgt.katanalocate;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +10,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.support.v4.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +26,7 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
 
-public class InboxViewActivity extends Activity implements OnItemClickListener {// extends ListActivity {
+public class InboxViewActivity extends Activity{// implements OnItemClickListener {// extends ListActivity {
 
 	
 	private Map<String, String> DisplayItems;
@@ -81,36 +85,33 @@ public class InboxViewActivity extends Activity implements OnItemClickListener {
 				    Request.executeBatchAsync(request); 
 		}
 		
-		//while (request.)
-		///*while (*/android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED = 1;//)
-		
-		/*while (Id==null)
-		{
-			
-		}*/
-		
-        /*DisplayItems = new HashMap<String, String>();
-        DisplayItems.put("Sender", "DJ");
-        DisplayItems.put("Subject", "Test Subject2");
-        data.add(DisplayItems);
-        DisplayItems = new HashMap<String, String>();
-        DisplayItems.put("Sender", "DJ2");
-        DisplayItems.put("Subject", Integer.toString(messages.size()));
-        data.add(DisplayItems);*/
-		
-        //Log.d("InboxViewActivity", "Subject ");
-        
     }
 	
 	public void populatelistview()
 	{
 		SimpleAdapter adapter = new SimpleAdapter(this, data, android.R.layout.simple_list_item_2, new String[] {"Sender", "Subject"}, new int[] {android.R.id.text1, android.R.id.text2});
         InboxList.setAdapter(adapter);
-	}
+        InboxList.setOnItemClickListener(new OnItemClickListener() {
 
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		// TODO Auto-generated method stub
-		
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+				int MessageId = messages.get((int) id).getId();
+				switchactivities(MessageId);
+				//Toast.makeText(getBaseContext(), MessageSubject, Toast.LENGTH_LONG).show();
+			}
+        	
+        });
 	}
+	
+	public void switchactivities(int MessageId)
+	{
+		Intent viewMessageActivity = new Intent(this, ViewMessageActivity.class);
+		viewMessageActivity.putExtra("MessageID", MessageId);
+		viewMessageActivity.putExtra("sentreceive", 0);
+		startActivity(viewMessageActivity);
+	}
+	
+
+	
 
 }
