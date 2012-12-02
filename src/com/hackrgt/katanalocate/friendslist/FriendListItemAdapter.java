@@ -51,7 +51,7 @@ public class FriendListItemAdapter extends ArrayAdapter<Friend> {
 				
 			}
 			
-			if (friendIsAppUser(friend)) {
+			if (friendIsAppUser(friend) || position <= 2) {
 				//System.out.println(friend.getName()+" has the app");
 				friend.setAppUser(true);
 				
