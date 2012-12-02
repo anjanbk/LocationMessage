@@ -35,7 +35,7 @@
 	        android:contentDescription="Pin for selecting to use current location"/-->
 	
 	    <Button
-	        android:id="@+id/button1"
+	        android:id="@+id/searchButton"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_weight="1"
@@ -55,7 +55,7 @@
 	<!-- Old key: android:apiKey="0wUkHHkyOhF51Vp0ztPTy46Q5utb1Y_-SQTJ_nA" -->
 	
 	<Button
-	    android:id="@+id/button2"
+	    android:id="@+id/doneButton"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_weight="2"
