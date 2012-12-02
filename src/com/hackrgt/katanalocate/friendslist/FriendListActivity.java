@@ -6,6 +6,7 @@ import com.facebook.FacebookException;
 import com.facebook.Session;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
+import com.hackrgt.katanalocate.DataBaseHelper;
 import com.hackrgt.katanalocate.R;
 import com.hackrgt.katanalocate.SendMessageActivity;
 
@@ -23,6 +24,7 @@ public class FriendListActivity extends Activity implements OnItemClickListener 
 	private ListView friendsListView;
 	private ArrayList<Friend> friends;
 	private ArrayList<String> appUsersId;
+	private DataBaseHelper dbHelper;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,7 @@ public class FriendListActivity extends Activity implements OnItemClickListener 
         setContentView(R.layout.friend_list_view);
         
         AlertMessage.setActivity(this);
+        dbHelper = new DataBaseHelper(getApplicationContext());
         appUsersId = getAppUsersId();
         
         Session session = Session.getActiveSession();
@@ -57,9 +60,12 @@ public class FriendListActivity extends Activity implements OnItemClickListener 
 	
 	private ArrayList<String> getAppUsersId() {
 		//TODO: Fetch user ids from database
-		ArrayList<String> users = new ArrayList<String>();
-		users.add("11111");
-		return users;
+		ArrayList<String> usersID = new ArrayList<String>();
+		usersID.add("11111");
+		
+		usersID = (ArrayList<String>) dbHelper.fetchallUserID();
+		System.out.println(usersID);
+		return usersID;
 	}
 
 	public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {

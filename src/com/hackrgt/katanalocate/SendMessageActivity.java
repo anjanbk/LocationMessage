@@ -3,12 +3,18 @@ package com.hackrgt.katanalocate;
 import java.util.Calendar;
 import java.util.Formatter;
 
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
+import com.hackrgt.katanalocate.friendslist.AlertMessage;
 import com.hackrgt.katanalocate.friendslist.FriendListActivity;
 //import com.hackrgt.katanalocate.helper.ObjectSaver;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -19,6 +25,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 public class SendMessageActivity extends Activity implements OnClickListener, OnTimeSetListener {
@@ -27,28 +34,30 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 	private Button chooseRecepient, chooseLocation, chooseTime, submitButton;
 	private TimePickerDialog timePicker;
 	private Calendar calendar;
+	private DataBaseHelper dbHelper;
 	
 	private SharedPreferences prefs;
 	private Editor editor;
-	private String msgRecipientName, msgTime, msgLocation, msgRecipientId;
+	private String msgRecipientId, msgRecipientName, msgSubject, msgLocation, msgBody;
+	private long msgTime;
 	
 	private final String STORED_TIME_FLAG = "timeSelected";
 	private final String STORED_RECIEPIENT_FLAG = "userSelected";
+	private final String STORED_LOCATION_FLAG = "locationSelected";
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.send_message_view);
         
+        AlertMessage.setActivity(this);
+        dbHelper = new DataBaseHelper(getApplicationContext());
+        
         //ObjectSaver.setActivity(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         editor = prefs.edit();
-        //editor.putBoolean("timeSelected", false);
-        editor.commit();
         
-        //messageTo = (EditText) findViewById(R.id.messageTo);
         messageSubject = (EditText) findViewById(R.id.messageSubject);
-        //locationLabel = (TextView) findViewById(R.id.locationLabel);
         messageBody = (EditText) findViewById(R.id.messageBody);
         
         //Set listeners on buttons
@@ -72,8 +81,15 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
         	msgLocation = extras.getString("location_name");
-        	if (msgLocation != null)
+        	if (msgLocation != null) {
         		chooseLocation.setText("Choose Location: ("+msgLocation+")");
+        		
+        		editor.putBoolean(STORED_LOCATION_FLAG, true);
+        		//editor.putString("locLat", msgRecipientId);
+        		//editor.putString("locLong", msgRecipientName);
+        		editor.putString("locName", msgLocation);
+                editor.commit();
+        	}
         	
         	msgRecipientId = extras.getString("user_id");
         	msgRecipientName = extras.getString("user_name");
@@ -127,13 +143,11 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 			timePicker.show();
 		}
 		else if (viewId == submitButton.getId()) {
-			String subject = messageSubject.getText().toString();
-			String body = messageBody.getText().toString();
-			sendMessage(msgRecipientId, subject, msgLocation, msgTime, body);
+			msgSubject = messageSubject.getText().toString();
+			msgBody = messageBody.getText().toString();
 			
-			clearStoreVarFlags();
-			Intent activity = new Intent(this, MainActivity.class);
-			startActivity(activity);
+			//This will call sendMessage
+			getUserId(getApplicationContext());
 		}
 	}
 
@@ -149,9 +163,55 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
     	updateTime();
 	}
 	
-	private void sendMessage(String msgRecipientId, String msgSubject, String msgLocation, String msgTime, String msgBody) {
-		//TODO: Send message to server
+	private boolean sendMessage(String userIdStr, String userName) {
 		
+		//Get recipient id and name
+		if (prefs.getBoolean(STORED_RECIEPIENT_FLAG, false) == false) {
+			AlertMessage.showToastMessage("Please select a friend");
+			return false;
+		}
+		
+		msgRecipientId = prefs.getString("userId", null);
+		msgRecipientName = prefs.getString("userName", null);
+		if (msgRecipientId == null) {
+			AlertMessage.showToastMessage("Please select a friend");
+			return false;
+		}
+		
+		msgRecipientName = prefs.getString("userName", null);
+		
+		int type = 0;
+		
+		//Get location
+		if (prefs.getBoolean(STORED_LOCATION_FLAG, false)) {
+			msgLocation = prefs.getString("locName", null);
+			type = 1;
+		}
+		
+		//Get time
+		Long timeStamp;
+		if (prefs.getBoolean(STORED_TIME_FLAG, false)) {
+			timeStamp = calendar.getTimeInMillis();
+			if (type == 0)
+				type = 2;
+			else
+				type = 3;
+		}
+		else
+			timeStamp = null;
+		
+		//msgLocation = "test";
+		if (timeStamp == null)
+			timeStamp = Long.valueOf(-1);
+		
+		MessageTable msgTable = new MessageTable(0, timeStamp.longValue(), msgLocation, msgSubject, msgBody, type);
+		
+		String senderGcmRegId = "12345";
+		UserTable senderTable = new UserTable(userIdStr, senderGcmRegId, userName);
+		UserTable receiverTable = new UserTable(msgRecipientId, null, msgRecipientName);
+		
+		dbHelper.addMessage(msgTable, senderTable, receiverTable);
+		return true;
 	}
 	
 	private void updateTime() {
@@ -172,6 +232,39 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 	private void clearStoreVarFlags() {
 		editor.putBoolean(STORED_TIME_FLAG, false);
 		editor.putBoolean(STORED_RECIEPIENT_FLAG, false);
+		editor.putBoolean(STORED_LOCATION_FLAG, false);
 		editor.commit();
+	}
+	
+	private String getUserId(final Context context) {
+		final TextView idView = new TextView(getApplicationContext());
+		final String[] strArray = {null};
+		Session session = Session.getActiveSession();
+		if (session != null && session.isOpened()) {
+			Request request = Request.newMeRequest(
+				      session,
+				      new Request.GraphUserCallback() {
+				    	String id = null;
+				        // callback after Graph API response with user object
+				        public void onCompleted(GraphUser user, Response response) {
+				          if (user != null) {
+				        	  /*strArray[0] = user.getId();
+				        	  id = user.getId();
+				        	  idView.setText(id);
+				        	  System.out.println(id);*/
+				        	  
+				        	  if (sendMessage(user.getId(), user.getName()) == true) {
+				  				clearStoreVarFlags();
+				  				Intent activity = new Intent(context, MainActivity.class);
+				  				startActivity(activity);
+				  			}
+				          }
+				        }
+				      }
+				    );
+				    Request.executeBatchAsync(request); 
+		}
+		
+		return idView.getText().toString();
 	}
 }
