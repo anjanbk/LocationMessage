@@ -10,10 +10,11 @@ public class UserTable {
     	return Name;
     }
     
-    public UserTable(String A, String B)
+    public UserTable(String userid, String gcmid, String name)
     {
-    	UserID = A;
-    	GcmRegId = B;
+    	UserID = userid;
+    	GcmRegId = gcmid;
+    	Name = name;
     }
     
     public UserTable()

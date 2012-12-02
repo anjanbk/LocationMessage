@@ -45,6 +45,7 @@ public class InboxViewActivity extends Activity implements OnItemClickListener {
         final DataBaseHelper dbhelper = new DataBaseHelper(this);
         //final List<MessageTable> messages = new ArrayList<MessageTable>();
         final List<MessageTable> messages = new ArrayList();
+        GetSelfData fbhelper = new GetSelfData();
         
         
         /*DisplayItems = new HashMap<String, String>();
