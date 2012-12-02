@@ -29,9 +29,10 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     //Table_Message Column Names
     private static final String MESSAGE_ID = "ID";
     private static final String MESSAGE_TIMESTAMP = "TimeStamp";
-    private static final String MESSAGE_LOCATION = "Location";
+    private static final String MESSAGE_LOCATIONLAT = "LocationLat";
+    private static final String MESSAGE_LOCATIONLONG = "LocationLong";
     private static final String MESSAGE_SUBJECT = "Subject";
-    private static final String MESSAGE_TEXT = "Text";
+    private static final String MESSAGE_TEXT = "Content";
     private static final String MESSAGE_TYPEID = "TypeID";
     
     //Table User Column Names
@@ -53,34 +54,39 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	public void onCreate(SQLiteDatabase db) {
     	Log.d("Reached Create Database: ", "Reached Create Database ..");
     	String CREATE_MESSAGE_TABLE = "CREATE TABLE " + TABLE_MESSAGE + "("
-                + MESSAGE_ID + " INTEGER PRIMARY KEY," + MESSAGE_TIMESTAMP + " NUMERIC,"
-                + MESSAGE_LOCATION + " TEXT," + MESSAGE_SUBJECT + "TEXT," +  MESSAGE_TEXT + "TEXT," 
-                + MESSAGE_TYPEID + "NUMERIC" + ")";
+                + MESSAGE_ID + " INTEGER," + MESSAGE_TIMESTAMP + " INTEGER,"
+                + MESSAGE_LOCATIONLAT + " REAL," + MESSAGE_LOCATIONLONG + " REAL," + MESSAGE_SUBJECT + " TEXT," +  MESSAGE_TEXT + " TEXT," 
+                + MESSAGE_TYPEID + " INTEGER" + ")";
         db.execSQL(CREATE_MESSAGE_TABLE);
+        Log.d("Create Message Table Text", CREATE_MESSAGE_TABLE);
         String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
                 + USER_USERID + " TEXT," + USER_GCMREGID + " TEXT," 
         		+ USER_NAME + " TEXT" + ")";
+        Log.d("CREATE_USER_TABLE Text", CREATE_USER_TABLE);
         db.execSQL(CREATE_USER_TABLE);
         String CREATE_SENDRECEIVE_TABLE = "CREATE TABLE " + TABLE_SENDRECEIVE + "("
                 + SENDRECEIVE_SENDERID + " TEXT," + SENDRECEIVE_RECEIVERID + " TEXT," + 
-                SENDRECEIVE_MESSAGEID + " NUMERIC" + ")";
+                SENDRECEIVE_MESSAGEID + " INTEGER" + ")";
+        Log.d("CREATE_SENDRECEIVE_TABLE Text", CREATE_SENDRECEIVE_TABLE);
         db.execSQL(CREATE_SENDRECEIVE_TABLE);
         String CREATE_READUNREAD_TABLE = "CREATE TABLE " + TABLE_READUNREAD + "("
-                + READUNREAD_MESSAGEID + " INTEGER PRIMARY KEY," + READUNREAD_ISREAD + " NUMERIC" + ")";
+                + READUNREAD_MESSAGEID + " INTEGER," + READUNREAD_ISREAD + " INTEGER" + ")";
         db.execSQL(CREATE_READUNREAD_TABLE);
 	}
     
     
-    public void addUser(String UserID, String GCMRegID) {
+    public void addUser(String UserID, String name, String GCMRegID) {
         SQLiteDatabase db = this.getWritableDatabase();
  
         ContentValues values = new ContentValues();
         values.put(USER_USERID, UserID); // Contact Name
+        values.put(USER_NAME, name); 
         values.put(USER_GCMREGID, GCMRegID); // Contact Phone
  
         // Inserting Row
         db.insert(TABLE_USER, null, values);
         db.close(); // Closing database connection
+        Log.d("Add User", "Successfully added user");
     }
     
     public String fetchUserGCMID(String UserID)
@@ -123,15 +129,16 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
         values.put(MESSAGE_ID, message.getId()); 
         values.put(MESSAGE_TIMESTAMP, message.getDateTime()); 
-        values.put(MESSAGE_LOCATION, message.getLocation());
+        values.put(MESSAGE_LOCATIONLAT, message.getLatitude());
+        values.put(MESSAGE_LOCATIONLONG, message.getLatitude());
         values.put(MESSAGE_SUBJECT, message.getSubject());
         values.put(MESSAGE_TEXT, message.getMessage());
         values.put(MESSAGE_TYPEID, message.getType());
-        db.insert(TABLE_USER, null, values);
+        db.insert(TABLE_MESSAGE, null, values);
         
         values = new ContentValues();
         values.put(READUNREAD_MESSAGEID, message.getId()); 
-        values.put(READUNREAD_ISREAD, 0);
+        values.put(READUNREAD_ISREAD, 1);
         db.insert(TABLE_READUNREAD, null, values);
         
         values = new ContentValues();
@@ -139,6 +146,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         values.put(SENDRECEIVE_SENDERID, Sender.getUserID());
         values.put(SENDRECEIVE_RECEIVERID, Receiver.getUserID());
         db.insert(TABLE_SENDRECEIVE, null, values);
+        Log.d("Add Message .. ", "Successfully added message");
     }
     
     /*
@@ -148,30 +156,29 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     public List<MessageTable> fillInbox(String SelfID)
     {
     	List<MessageTable> messages = new ArrayList<MessageTable>();
-    	String selectQuery = "SELECT M.ID, M.TimeStamp, M.Location, M.Subject, M.Text, U.Name, M.TypeID" + " FROM " + 
-    			TABLE_MESSAGE + " M, " + TABLE_SENDRECEIVE + " S, " + TABLE_USER + " U, " + 
-    			"WHERE M.ID = S.MessageID AND S.SenderID = U.UserID AND S.ReceiverID = " + SelfID;
-    	
+    	String selectQuery = "SELECT M.ID, M.TimeStamp, M.LocationLat, M.LocationLong, M.Subject, M.Content, U.UserName, M.TypeID" + " FROM " + 
+    			TABLE_MESSAGE + " M, " + TABLE_SENDRECEIVE + " S, " + TABLE_USER + " U " + 
+    			"WHERE M.ID = S.MessageID AND S.SenderID = U.UserID AND S.ReceiverID = \"" + SelfID + "\"";
+    	Log.d("fillInbox .. ", "Query Text Created " + selectQuery);
     	SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        
+        Log.d("fillInbox .. ", "Cursor Received data");
         if (cursor.moveToFirst()) {
         	do
         	{
-        		messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getInt(6)));
+        		messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getInt(7)));
         	} while (cursor.moveToNext());
         }
-    	
+        Log.d("fillInbox .. ", "Successfully sent messages variable from fillInbox " + messages.size());
     	return messages;
     }
-    
     
     public List<MessageTable> fillsentMessages(String SelfID)
     {
     	List<MessageTable> messages = new ArrayList<MessageTable>();
-    	String selectQuery = "SELECT M.ID, M.TimeStamp, M.Location, M.Subject, M.Text, U.Name, M.TypeID" + " FROM " + 
-    			TABLE_MESSAGE + " M, " + TABLE_SENDRECEIVE + " S, " + TABLE_USER + " U, " + 
-    			"WHERE M.ID = S.MessageID AND S.ReceiverID = U.UserID AND S.SenderID = " + SelfID;
+    	String selectQuery = "SELECT M.ID, M.TimeStamp, M.LocationLat, M.LocationLong, M.Subject, M.Content, U.UserName, M.TypeID" + " FROM " + 
+    			TABLE_MESSAGE + " M, " + TABLE_SENDRECEIVE + " S, " + TABLE_USER + " U " + 
+    			"WHERE M.ID = S.MessageID AND S.ReceiverID = U.UserID AND S.SenderID = \"" + SelfID + "\"";
     	
     	SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -179,7 +186,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         if (cursor.moveToFirst()) {
         	do
         	{
-        		messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getInt(6)));
+        		messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getInt(7)));
         	} while (cursor.moveToNext());
         }
     	
@@ -319,9 +326,88 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         if (cursor != null)
             cursor.moveToFirst();
      
-        MessageTable message = new MessageTable(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+        MessageTable message = new MessageTable(cursor.getLong(0), cursor.getDouble(1), cursor.getDouble(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         // return message
         return message;
+    }
     
+    /*
+     * 
+     * Test Functions
+     */
+    
+    public void checkMessage()
+    {
+    	//List<MessageTable> messages = new ArrayList<MessageTable>();
+    	String selectQuery = "SELECT * FROM " + TABLE_MESSAGE;
+    	
+    	SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        
+        if (cursor.moveToFirst()) {
+        	do
+        	{
+        		String Row ="";
+        		for (int i=0; i<cursor.getColumnCount(); i++)
+        		{
+        			Row += " " + cursor.getString(i);
+        		}
+        		Log.d("Message Table Contents ", Row);
+        		//messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getInt(6)));
+        	} while (cursor.moveToNext());
+        }
+        Log.d("Check Message Table ", "No. of rows" + cursor.getCount());
+        Log.d("Check Message Table ", "No. of columns" + cursor.getColumnCount());
+    	//return messages;
+    }
+    
+    public void checkUser()
+    {
+    	//List<MessageTable> messages = new ArrayList<MessageTable>();
+    	String selectQuery = "SELECT * FROM " + TABLE_USER;
+    	
+    	SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        
+        if (cursor.moveToFirst()) {
+        	do
+        	{
+        		String Row ="";
+        		for (int i=0; i<cursor.getColumnCount(); i++)
+        		{
+        			Row += " " + cursor.getString(i);
+        		}
+        		Log.d("User Table Contents ", Row);
+        		//messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getInt(6)));
+        	} while (cursor.moveToNext());
+        }
+        Log.d("Check User Table ", "No. of rows" + cursor.getCount());
+        Log.d("Check User Table ", "No. of columns" + cursor.getColumnCount());
+    	//return messages;
+    }
+    
+    public void checkSendReceive()
+    {
+    	//List<MessageTable> messages = new ArrayList<MessageTable>();
+    	String selectQuery = "SELECT * FROM " + TABLE_SENDRECEIVE;
+    	
+    	SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        
+        if (cursor.moveToFirst()) {
+        	do
+        	{
+        		String Row ="";
+        		for (int i=0; i<cursor.getColumnCount(); i++)
+        		{
+        			Row += " " + cursor.getString(i);
+        		}
+        		Log.d("SendReceive Table Contents ", Row);
+        		//messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getInt(6)));
+        	} while (cursor.moveToNext());
+        }
+        Log.d("Check SendReceive Table ", "No. of rows" + cursor.getCount());
+        Log.d("Check SendReceive Table ", "No. of columns" + cursor.getColumnCount());
+    	//return messages;
     }
 }

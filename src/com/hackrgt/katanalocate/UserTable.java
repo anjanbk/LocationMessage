@@ -10,7 +10,7 @@ public class UserTable {
     	return Name;
     }
     
-    public UserTable(String userid, String gcmid, String name)
+    public UserTable(String userid,  String name, String gcmid)
     {
     	UserID = userid;
     	GcmRegId = gcmid;

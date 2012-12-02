@@ -6,6 +6,7 @@ import com.facebook.SessionState;
 import com.hackrgt.katanalocate.R;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 
 public class MainActivity extends FacebookActivity {
@@ -30,6 +31,21 @@ public class MainActivity extends FacebookActivity {
 	        mainFragment = (MainFragment) getSupportFragmentManager()
 	        .findFragmentById(android.R.id.content);
 	    }
+	    
+	    /*
+	     * Testing Inbox View
+	     */
+	    Log.d("Main Activity", "Tried to create DBHelper");
+	    DataBaseHelper dbhelper = new DataBaseHelper(this);
+	    dbhelper.addUser("Chandim", "Chandim", "Success");
+	    dbhelper.addUser("Diya", "Diya", "Dummy");
+	    MessageTable message = new MessageTable(1, 5, 36, 54, "Troll", "Troll", "Diya", 2);
+	    UserTable Receiver = new UserTable("Chandim", "Chandim", "Success");
+	    UserTable Sender = new UserTable("Diya", "Diya", "Dummy");
+	    dbhelper.addMessage(message, Sender, Receiver);
+	    dbhelper.checkMessage();
+	    dbhelper.checkUser();
+	    dbhelper.checkSendReceive();
     }
     
     @Override
