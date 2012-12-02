@@ -13,7 +13,7 @@
     <string name="title_activity_view_message">View Message</string>
     <string name="send_request">Send Request</string>
     <string name="title_activity_inbox">Inbox</string>
-    <string name="title_activity_send_message">Sent Messages</string>
+    <string name="title_activity_sent_messages">Sent Messages</string>
     <string name="title_activity_send_message">Send Message</string>
     <string name="title_activity_friends_list">Choose Recipient</string>
     <string name="Inbox">Inbox</string>
