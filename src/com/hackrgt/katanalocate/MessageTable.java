@@ -9,7 +9,8 @@ public class MessageTable {
     
 	private int id;
 	private long dateTime;
-	private String location;
+	private String locLat;
+	private String locLong;
 	private String subject;
 	private String message;
 	private String user;
@@ -25,10 +26,11 @@ public class MessageTable {
 	 * @param user Receiver or sender of message depending on view
 	 * @param type Determines if sent or recieved
 	 */
-	public MessageTable(int id, long dateTime, String location, String subject, String message, String user, int type) {
+	public MessageTable(int id, long dateTime, String locLat, String locLong, String subject, String message, String user, int type) {
 		this.id = id;
 		this.dateTime = dateTime;
-		this.location = location;
+		this.locLat = locLat;
+		this.locLong = locLong;
 		this.subject = subject;
 		this.message = message;
 		this.user = user;
@@ -43,12 +45,32 @@ public class MessageTable {
 	 * @param message Main content of the message
 	 * @param user Receiver or sender of message depending on view
 	 */
-	public MessageTable(long dateTime, String location, String subject, String message, String user) {
+	public MessageTable(long dateTime, String locLat, String locLong, String subject, String message, String user) {
 		this.dateTime = dateTime;
-		this.location = location;
+		this.locLat = locLat;
+		this.locLong = locLong;
 		this.subject = subject;
 		this.message = message;
 		this.user = user;
+	}
+	
+	/**
+	 * Complete constructor for a message
+	 * @param id message ID
+	 * @param dateTime The timestamp for the message
+	 * @param location Location to receive message
+	 * @param subject The subject
+	 * @param message Main content of the message
+	 * @param type Determines if sent or recieved
+	 */
+	public MessageTable(int id, long dateTime, String locLat, String locLong, String subject, String message, int type) {
+		this.id = id;
+		this.dateTime = dateTime;
+		this.locLat = locLat;
+		this.locLong = locLong;
+		this.subject = subject;
+		this.message = message;
+		this.type = type;
 	}
 	
 	public void setId(int id) {
@@ -65,14 +87,6 @@ public class MessageTable {
 	
 	public long getDateTime() {
 		return this.dateTime;
-	}
-	
-	public void setLocation(String location) {
-		this.location = location;
-	}
-	
-	public String getLocation() {
-		return this.location;
 	}
 	
 	public void setSubject(String subject) {
@@ -105,6 +119,22 @@ public class MessageTable {
 	
 	public int getType() {
 		return this.type;
+	}
+
+	public String getLatitude() {
+		return locLat;
+	}
+
+	public void setLatitude(String locLat) {
+		this.locLat = locLat;
+	}
+
+	public String getLongitude() {
+		return locLong;
+	}
+
+	public void setLongitude(String locLong) {
+		this.locLong = locLong;
 	}
 
 }

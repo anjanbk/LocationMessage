@@ -1,7 +1,10 @@
 package com.hackrgt.katanalocate;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Formatter;
+import java.util.List;
+import java.util.Locale;
 
 import com.facebook.Request;
 import com.facebook.Response;
@@ -9,7 +12,6 @@ import com.facebook.Session;
 import com.facebook.model.GraphUser;
 import com.hackrgt.katanalocate.friendslist.AlertMessage;
 import com.hackrgt.katanalocate.friendslist.FriendListActivity;
-//import com.hackrgt.katanalocate.helper.ObjectSaver;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
@@ -18,6 +20,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -39,7 +44,7 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 	private SharedPreferences prefs;
 	private Editor editor;
 	private String msgRecipientId, msgRecipientName, msgSubject, msgLocation, msgBody;
-	private long msgTime;
+	private Location location;
 	
 	private final String STORED_TIME_FLAG = "timeSelected";
 	private final String STORED_RECIEPIENT_FLAG = "userSelected";
@@ -81,13 +86,15 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
         	msgLocation = extras.getString("location_name");
-        	if (msgLocation != null) {
-        		chooseLocation.setText("Choose Location: ("+msgLocation+")");
+        	location = (Location) extras.getParcelable("location");
+        	if (location != null) {
+        		String address = getAddress(location);
+        		chooseLocation.setText("Choose Location: ("+address+")");
         		
         		editor.putBoolean(STORED_LOCATION_FLAG, true);
-        		//editor.putString("locLat", msgRecipientId);
-        		//editor.putString("locLong", msgRecipientName);
-        		editor.putString("locName", msgLocation);
+        		editor.putLong("locLat", (long) location.getLatitude());
+        		editor.putLong("locLong", (long) location.getLongitude());
+        		editor.putString("locName", address);
                 editor.commit();
         	}
         	
@@ -122,7 +129,7 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
         }
     }
 
-    @Override
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
@@ -183,8 +190,12 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 		int type = 0;
 		
 		//Get location
+		String locLat = null;
+		String locLong = null;
 		if (prefs.getBoolean(STORED_LOCATION_FLAG, false)) {
-			msgLocation = prefs.getString("locName", null);
+			//msgLocation = prefs.getString("locName", null);
+			locLat = prefs.getString("locLat", null);
+			locLat = prefs.getString("locLong", null);
 			type = 1;
 		}
 		
@@ -204,7 +215,9 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 		if (timeStamp == null)
 			timeStamp = Long.valueOf(-1);
 		
-		MessageTable msgTable = new MessageTable(0, timeStamp.longValue(), msgLocation, msgSubject, msgBody, type);
+		System.out.println(timeStamp.longValue());
+		
+		MessageTable msgTable = new MessageTable(0, timeStamp.longValue(), locLat, locLong, msgSubject, msgBody, type);
 		
 		String senderGcmRegId = "12345";
 		UserTable senderTable = new UserTable(userIdStr, senderGcmRegId, userName);
@@ -229,6 +242,24 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
     	return fmt.toString()+" "+am_pm;
 	}
 	
+	private String getAddress(Location loc) {
+		Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+		List<Address> list = null;
+		try {
+			list = geoCoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Address address = null;
+        if (list != null & list.size() > 0)
+            address = list.get(0);
+        
+        if (address == null)
+        	return "unknown Address!";
+        else
+        	return address.getLocality();
+	}
+	
 	private void clearStoreVarFlags() {
 		editor.putBoolean(STORED_TIME_FLAG, false);
 		editor.putBoolean(STORED_RECIEPIENT_FLAG, false);
@@ -236,9 +267,7 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 		editor.commit();
 	}
 	
-	private String getUserId(final Context context) {
-		final TextView idView = new TextView(getApplicationContext());
-		final String[] strArray = {null};
+	private void getUserId(final Context context) {
 		Session session = Session.getActiveSession();
 		if (session != null && session.isOpened()) {
 			Request request = Request.newMeRequest(
@@ -248,10 +277,6 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 				        // callback after Graph API response with user object
 				        public void onCompleted(GraphUser user, Response response) {
 				          if (user != null) {
-				        	  /*strArray[0] = user.getId();
-				        	  id = user.getId();
-				        	  idView.setText(id);
-				        	  System.out.println(id);*/
 				        	  
 				        	  if (sendMessage(user.getId(), user.getName()) == true) {
 				  				clearStoreVarFlags();
@@ -264,7 +289,5 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 				    );
 				    Request.executeBatchAsync(request); 
 		}
-		
-		return idView.getText().toString();
 	}
 }
