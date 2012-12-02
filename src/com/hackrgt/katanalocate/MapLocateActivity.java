@@ -1,11 +1,15 @@
 package com.hackrgt.katanalocate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,11 +23,16 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 
 public class MapLocateActivity extends MapActivity {
 	private EditText mapSearchBox;
 	private MapView mapView;
 	private MyLocationOverlay myLocOverlay;
+	private Location selectedLocation;
+	
+	private ArrayList<OverlayItem> overlays;
+	private MapItemizedOverlay itemizedOverlay;
 	
 	@Override
 	protected boolean isRouteDisplayed() {
@@ -31,20 +40,43 @@ public class MapLocateActivity extends MapActivity {
 		return false;
 	}
 	
+	private Location getLocation(GeoPoint point) {
+		
+		return null;
+	}
+	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_view);
         
         mapView = (MapView)findViewById(R.id.mapview);
-       
+        
         // Center location on current position
         List<Overlay> overlays = mapView.getOverlays();
         myLocOverlay = new MyLocationOverlay(this, mapView);
+        
+        /**Changes*******************/
+        Drawable drawable = this.getResources().getDrawable(R.drawable.map_marker_icon);
+        itemizedOverlay = new MapItemizedOverlay(drawable, this);
+        
+        GeoPoint myLoc = myLocOverlay.getMyLocation();
+        myLocOverlay.enableMyLocation();
+        //myLocOverlay.onTouchEvent(this, mapView);
+        mapView.getOverlays().add(myLocOverlay);
+        
+        if (myLoc != null)
+        	System.out.println(myLoc.getLatitudeE6()+", "+myLoc.getLongitudeE6());
+        else
+        	System.out.println("My Loc is null!");
+        
+        /**End of Changes*******************/
+        
         overlays.add(myLocOverlay);
+        
         myLocOverlay.runOnFirstFix(new Runnable() {
         	public void run() {
         		mapView.getController().animateTo(myLocOverlay.getMyLocation());
-        		mapView.getController().setZoom(2);
+        		mapView.getController().setZoom(16);
         	}
         });
         
@@ -69,7 +101,7 @@ public class MapLocateActivity extends MapActivity {
 			}
 		});
     }
-
+	
 	private class SearchClicked extends AsyncTask<Void, Void, Boolean> {
         private String toSearch;
         private Address address;
@@ -89,9 +121,13 @@ public class MapLocateActivity extends MapActivity {
                 }
 
                 address = results.get(0);
+               
 
-                  // Now do something with this GeoPoint:
-                //GeoPoint p = new GeoPoint((int) (address.getLatitude() * 1E6), (int) (address.getLongitude() * 1E6));
+                //Now do something with this GeoPoint:
+                GeoPoint p = new GeoPoint((int) (address.getLatitude() * 1E6), (int) (address.getLongitude() * 1E6));
+                OverlayItem overlay = new OverlayItem(p, toSearch, "");
+                itemizedOverlay.addOverlay(overlay);
+                mapView.getOverlays().add(itemizedOverlay);
 
             } catch (Exception e) {
                 Log.e("", "Something went wrong: ", e);
@@ -99,5 +135,5 @@ public class MapLocateActivity extends MapActivity {
             }
             return true;
         }
-}
+	}
 }

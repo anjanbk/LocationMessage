@@ -24,6 +24,15 @@
 	
 	        <requestFocus />
 	    </EditText>
+
+	    <!--ImageButton
+	        android:id="@+id/imageView1"
+	        android:layout_width="45dp"
+	        android:layout_height="45dp"
+	        android:layout_weight="9"
+	        android:background="@null"
+	        android:src="@drawable/pin"
+	        android:contentDescription="Pin for selecting to use current location"/-->
 	
 	    <Button
 	        android:id="@+id/button1"
@@ -40,8 +49,10 @@
 		android:id="@+id/mapview"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:apiKey="0wUkHHkyOhF51Vp0ztPTy46Q5utb1Y_-SQTJ_nA"
+		android:apiKey="0Tc-qSf9YrECdHiCURAg453zhZp-IaamuOWRsbw"
 		android:clickable="true" />
+	
+	<!-- Old key: android:apiKey="0wUkHHkyOhF51Vp0ztPTy46Q5utb1Y_-SQTJ_nA" -->
 	
 	<Button
 	    android:id="@+id/button2"
