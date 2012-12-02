@@ -77,6 +77,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     
     public void addUser(String UserID, String name, String GCMRegID) {
         SQLiteDatabase db = this.getWritableDatabase();
+        List<String> users = fetchallUserID();
+    	if (users.contains(UserID))
+    	{
+    		return;
+    	}
  
         ContentValues values = new ContentValues();
         values.put(USER_USERID, UserID); // Contact Name
@@ -86,12 +91,13 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         // Inserting Row
         db.insert(TABLE_USER, null, values);
         db.close(); // Closing database connection
-        Log.d("Add User", "Successfully added user");
+        Log.d("Chandim - Add User", "Successfully added user " + UserID );
     }
     
     public String fetchUserGCMID(String UserID)
     {
     	SQLiteDatabase db = this.getReadableDatabase();
+    	
     	 
         Cursor cursor = db.query(TABLE_USER, new String[] { USER_USERID,
         		USER_GCMREGID}, USER_USERID + "=?",
@@ -145,7 +151,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         values.put(SENDRECEIVE_SENDERID, SenderID);
         values.put(SENDRECEIVE_RECEIVERID, ReceiverID);
         db.insert(TABLE_SENDRECEIVE, null, values);
-        Log.d("Add Message .. ", "Successfully added message");
+        Log.d("Chandim - Add Message .. ", "Successfully sent message " + SenderID + " - " + ReceiverID);
     	
     }
 
@@ -212,6 +218,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	
     	SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
+        
+        Log.d("Chandim-fillsentMessage", Integer.toString(cursor.getCount()));
+        checkUser();
+        checkMessage();
+        checkSendReceive();
         
         if (cursor.moveToFirst()) {
         	do
