@@ -41,18 +41,18 @@ public class MainActivity extends FacebookActivity {
 	     * Testing Inbox View
 	     */
 	    Log.d("Main Activity", "Tried to create DBHelper");
-	    DataBaseHelper dbhelper = new DataBaseHelper(this);
-	    dbhelper.addUser("Chandim", "Chandim", "Success");
-	    dbhelper.addUser("Diya", "Diya", "Dummy");
+	    //DataBaseHelper dbhelper = new DataBaseHelper(this);
+	    //dbhelper.addUser("Chandim", "Chandim", "Success");
+	    //dbhelper.addUser("Diya", "Diya", "Dummy");
 	    MessageTable message = new MessageTable(1, 5, 36, 54, "Troll", "Troll", "Diya", 2);
 	    MessageTable message2 = new MessageTable(2, 5, 36, 54, "Troll2", "Troll2", "Diya", 2);
 	    UserTable Receiver = new UserTable("Chandim", "Chandim", "Success");
 	    UserTable Sender = new UserTable("Diya", "Diya", "Dummy");
-	    dbhelper.addMessage(message, Sender, Receiver);
-	    dbhelper.addMessage(message2, Receiver, Sender);
-	    dbhelper.checkMessage();
-	    dbhelper.checkUser();
-	    dbhelper.checkSendReceive();
+	    //dbhelper.addMessage(message, Sender, Receiver);
+	    //dbhelper.addMessage(message2, Receiver, Sender);
+	    //dbhelper.checkMessage();
+	    //dbhelper.checkUser();
+	    //dbhelper.checkSendReceive();
     }
     
     @Override
@@ -71,6 +71,7 @@ public class MainActivity extends FacebookActivity {
         	File database = getApplicationContext().getDatabasePath("DatabaseLocation");
         	if (!database.exists()) {
         		//Get users Facebook Id
+        		Log.d("Chandim - Main Activity", "Database doesn't exist");
         		final Session session = Session.getActiveSession();
         		if (session != null && session.isOpened()) {
         			Request request = Request.newMeRequest(
@@ -82,8 +83,11 @@ public class MainActivity extends FacebookActivity {
         								final String userId = user.getId();
         								final String userName = user.getName();
         								//Add the user to the sqlite database
+        								Log.d("Chandim - Main Activity", "Database created");
         								DataBaseHelper helper = new DataBaseHelper(MainActivity.this);
-        								helper.addUser(userId, "", userName);
+        								helper.addUser(userId, userName, "");
+        								helper.addUser("Chandim", "Chandim", "Success");
+        							    helper.addUser("Diya", "Diya", "Dummy");
         							}
         						}
         					}

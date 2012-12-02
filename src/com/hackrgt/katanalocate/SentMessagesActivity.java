@@ -48,7 +48,7 @@ public class SentMessagesActivity extends Activity {
 				        public void onCompleted(GraphUser user, Response response) {
 				          if (user != null) {
 				        	  Log.d("SentMessagesActivity", "Facebook ID:" + user.getId());
-				        	  messages = dbhelper.fillsentMessages("Chandim");
+				        	  messages = dbhelper.fillsentMessages(user.getId());
 				          	  
 				        	  for (MessageTable msg: messages)
 				        	  {

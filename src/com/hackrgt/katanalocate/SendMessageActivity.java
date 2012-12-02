@@ -170,7 +170,7 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
     	updateTime();
 	}
 	
-	private boolean sendMessage(String userIdStr, String userName) {
+	private boolean sendMessage(String userId) {
 		
 		//Get recipient id and name
 		if (prefs.getBoolean(STORED_RECIEPIENT_FLAG, false) == false) {
@@ -179,7 +179,7 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 		}
 		
 		msgRecipientId = prefs.getString("userId", null);
-		msgRecipientName = prefs.getString("userName", null);
+		//msgRecipientName = prefs.getString("userName", null);
 		if (msgRecipientId == null) {
 			AlertMessage.showToastMessage("Please select a friend");
 			return false;
@@ -222,12 +222,8 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 		System.out.println(timeStamp.longValue());
 		
 		MessageTable msgTable = new MessageTable(0, timeStamp.longValue(), locLat, locLong, msgSubject, msgBody, type);
-		
-		String senderGcmRegId = "12345";
-		UserTable senderTable = new UserTable(userIdStr, senderGcmRegId, userName);
-		UserTable receiverTable = new UserTable(msgRecipientId, null, msgRecipientName);
-		
-		dbHelper.addMessage(msgTable, senderTable, receiverTable);
+		dbHelper.sendMessage(msgTable, userId, "Chandim");
+		AlertMessage.showToastMessage("Message sent!");
 		return true;
 	}
 	
@@ -281,7 +277,7 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 				        public void onCompleted(GraphUser user, Response response) {
 				          if (user != null) {
 				        	  
-				        	  if (sendMessage(user.getId(), user.getName()) == true) {
+				        	  if (sendMessage(user.getId()) == true) {
 				  				clearStoreVarFlags();
 				  				Intent activity = new Intent(context, MainActivity.class);
 				  				startActivity(activity);
