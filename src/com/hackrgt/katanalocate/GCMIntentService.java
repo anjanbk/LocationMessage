@@ -1,7 +1,6 @@
 package com.hackrgt.katanalocate;
  
-import android.app.Notification;
-import android.app.NotificationManager;
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -44,8 +43,35 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onMessage(Context context, Intent intent) {
         Log.i(TAG, "Received message");
+        //Get passed in data
+        int id = intent.getExtras().getInt("id");
+        String message = intent.getExtras().getString("message");
+        String dateTime = intent.getExtras().getString("DateTime");
+        double locLat = intent.getExtras().getDouble("latitude");
+        double locLong = intent.getExtras().getDouble("longitude");
+        String subject = intent.getExtras().getString("subject");
+        int type = intent.getExtras().getInt("type");
+        String senderId = intent.getExtras().getString("senderId");
+        String receiverId = intent.getExtras().getString("receiverId");
+        String senderName = intent.getExtras().getString("senderName");
+        String receiverName = intent.getExtras().getString("receiverName");
+        String rGcmId = intent.getExtras().getString("receiverGcmId");
+        String sGcmId = intent.getExtras().getString("senderId");
+        MessageTable messageObj = new MessageTable(id, dateTime, locLat, locLong, subject, message, type);
+        UserTable sender = new UserTable(senderId, senderName, sGcmId);
+        UserTable receiver = new UserTable(receiverId, receiverName, rGcmId);
         
-        String message = intent.getExtras().getString("price");
+        //Add to table of received messages
+        DataBaseHelper helper = new DataBaseHelper(this);
+        helper.addMessage(messageObj, sender, receiver);
+        //Start a service to poll
+        Intent serviceIntent = new Intent(getApplicationContext(), NotificationService.class);
+        serviceIntent.putExtra("latitude", locLat);
+        serviceIntent.putExtra("longitude", locLong);
+        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, intent, 0);
+        AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        //Set alarm every 3 minutes to call service to check if user is in location for a message
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 180*1000, pintent);
         Log.d(TAG, message);
     }
  

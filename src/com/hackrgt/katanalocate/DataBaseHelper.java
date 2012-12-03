@@ -141,7 +141,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         values.put(MESSAGE_ID, message.getId()); 
         values.put(MESSAGE_TIMESTAMP, message.getDateTime()); 
         values.put(MESSAGE_LOCATIONLAT, message.getLatitude());
-        values.put(MESSAGE_LOCATIONLONG, message.getLongitude());
+        values.put(MESSAGE_LOCATIONLONG, message.getLatitude());
         values.put(MESSAGE_SUBJECT, message.getSubject());
         values.put(MESSAGE_TEXT, message.getMessage());
         values.put(MESSAGE_TYPEID, message.getType());
@@ -283,6 +283,18 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         cursor.moveToFirst();
         MessageTable message = new MessageTable(cursor.getInt(0), cursor.getString(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getInt(7));
         return message;
+    }
+    
+    /**
+     * Checks if the given lat and long are in the db
+     */
+    public boolean checkLocation(double latitude, double longitude) {
+    	String query = "SELECT * FROM Message M WHERE" +
+    			" Lat > " + (latitude - 0.000001) + " AND Lat < " + (latitude + 0.000001) + " AND " +
+    			"Lon > " + (longitude - 0.) + " AND Lon < " + (longitude + 1); 
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	Cursor cursor = db.rawQuery(query, null);
+    	return cursor.moveToFirst();
     }
     
     //public 
