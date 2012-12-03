@@ -51,7 +51,7 @@ public class FriendListItemAdapter extends ArrayAdapter<Friend> {
 				
 			}
 			
-			if (friendIsAppUser(friend) || position <= 2) {
+			if (friendIsAppUser(friend) || position <= 2 || friend.getName().equals("Chandim Chatterjee")) {
 				//System.out.println(friend.getName()+" has the app");
 				friend.setAppUser(true);
 				
@@ -62,6 +62,13 @@ public class FriendListItemAdapter extends ArrayAdapter<Friend> {
 				//Show has application icon
 				ImageView hasAppIcon = (ImageView) v.findViewById(R.id.hasAppIcon);
 				hasAppIcon.setVisibility(View.VISIBLE);
+			}
+			else {
+				friend.setAppUser(false);
+				TextView inviteFriend = (TextView) v.findViewById(R.id.sendInvite);
+				inviteFriend.setVisibility(View.VISIBLE);
+				ImageView hasAppIcon = (ImageView) v.findViewById(R.id.hasAppIcon);
+				hasAppIcon.setVisibility(View.INVISIBLE);
 			}
 		}
 			

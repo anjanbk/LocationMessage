@@ -37,7 +37,7 @@ public class MapItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 		 boolean result = false;
 		 int xPos = 0, yPos = 0;
 		 
-		 if (action == MotionEvent.ACTION_DOWN) {
+		 /*if (action == MotionEvent.ACTION_DOWN) {
 			 xPos = (int) event.getX();
 			 yPos = (int) event.getY();
 			 GeoPoint p = mapView.getProjection().fromPixels(
@@ -45,7 +45,7 @@ public class MapItemizedOverlay extends ItemizedOverlay<OverlayItem> {
                      yPos);
 			 mOverlays.add(new OverlayItem(p, "", ""));
 			 populate();
-		 }
+		 }*/
 		 
 		 /*if (action == MotionEvent.ACTION_DOWN) {
 			 xPos = (int) event.getX();
@@ -65,7 +65,8 @@ public class MapItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 				 populate();
 			 }
 		 }*/
-		 return(result || super.onTouchEvent(event, mapView));
+		 //return(result || super.onTouchEvent(event, mapView));
+		 return false;
 	 }
 	
 	@Override
