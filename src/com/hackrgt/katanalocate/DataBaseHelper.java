@@ -141,7 +141,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         values.put(MESSAGE_ID, message.getId()); 
         values.put(MESSAGE_TIMESTAMP, message.getDateTime()); 
         values.put(MESSAGE_LOCATIONLAT, message.getLatitude());
-        values.put(MESSAGE_LOCATIONLONG, message.getLatitude());
+        values.put(MESSAGE_LOCATIONLONG, message.getLongitude());
         values.put(MESSAGE_SUBJECT, message.getSubject());
         values.put(MESSAGE_TEXT, message.getMessage());
         values.put(MESSAGE_TYPEID, message.getType());
