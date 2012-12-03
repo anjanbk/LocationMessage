@@ -257,8 +257,12 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
         //address.getMaxAddressLineIndex()
         if (address == null)
         	return "unknown Address!";
-        else
-        	return address.getLocality();
+        else {
+        	StringBuilder sb = new StringBuilder();
+        	if (address.getMaxAddressLineIndex() > 0)
+        		sb.append(address.getAddressLine(0));
+        	return sb.toString();//address.getLocality();
+        }
 	}
 	
 	private void clearStoreVarFlags() {
