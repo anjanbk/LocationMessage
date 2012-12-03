@@ -54,7 +54,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	public void onCreate(SQLiteDatabase db) {
     	Log.d("Reached Create Database: ", "Reached Create Database ..");
     	String CREATE_MESSAGE_TABLE = "CREATE TABLE " + TABLE_MESSAGE + "("
-                + MESSAGE_ID + " INTEGER," + MESSAGE_TIMESTAMP + " INTEGER,"
+                + MESSAGE_ID + " INTEGER," + MESSAGE_TIMESTAMP + " TEXT,"
                 + MESSAGE_LOCATIONLAT + " REAL," + MESSAGE_LOCATIONLONG + " REAL," + MESSAGE_SUBJECT + " TEXT," +  MESSAGE_TEXT + " TEXT," 
                 + MESSAGE_TYPEID + " INTEGER" + ")";
         db.execSQL(CREATE_MESSAGE_TABLE);
@@ -129,7 +129,13 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     
     public void sendMessage(MessageTable message, String SenderID, String ReceiverID)
     {
+    	Log.d("Chandim - sendMessage Activity:", "Entered");
     	SQLiteDatabase db = this.getWritableDatabase();
+    	List<Integer> messageIds = fetchMesageIds();
+    	if (messageIds.contains(message.getId()))
+    	{
+    		return;
+    	}
    	 
         ContentValues values = new ContentValues();
         values.put(MESSAGE_ID, message.getId()); 
@@ -154,10 +160,32 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         Log.d("Chandim - Add Message .. ", "Successfully sent message " + SenderID + " - " + ReceiverID);
     	
     }
+    
+    public List<Integer> fetchMesageIds()
+    {
+    	List<Integer> messageids = new ArrayList<Integer>();
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	String selectQuery = "SELECT ID FROM " + TABLE_MESSAGE;
+    	
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+    	if (cursor.moveToFirst()) {
+        	do
+        	{
+        		messageids.add(cursor.getInt(0));
+        	} while (cursor.moveToNext());
+        }
+    	
+    	return messageids;
+    }
 
     public void addMessage(MessageTable message, UserTable Sender, UserTable Receiver)
     {
     	SQLiteDatabase db = this.getWritableDatabase();
+    	List<Integer> messageids = fetchMesageIds();
+    	if (messageids.contains(message.getId()))
+    	{
+    		return;
+    	}
     	 
         ContentValues values = new ContentValues();
         values.put(MESSAGE_ID, message.getId()); 
@@ -199,7 +227,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         if (cursor.moveToFirst()) {
         	do
         	{
-        		messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getInt(7)));
+        		messages.add(new MessageTable(cursor.getInt(0), cursor.getString(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getInt(7)));
         	} while (cursor.moveToNext());
         }
         Log.d("fillInbox .. ", "Successfully sent messages variable from fillInbox " + messages.size());
@@ -227,7 +255,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         if (cursor.moveToFirst()) {
         	do
         	{
-        		messages.add(new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getInt(7)));
+        		messages.add(new MessageTable(cursor.getInt(0), cursor.getString(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getInt(7)));
         	} while (cursor.moveToNext());
         }
     	
@@ -253,7 +281,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         Cursor cursor = db.rawQuery(selectQuery, null);
         Log.d("Chandim-Database", Integer.toString(cursor.getCount()));
         cursor.moveToFirst();
-        MessageTable message = new MessageTable(cursor.getInt(0), cursor.getLong(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getInt(7));
+        MessageTable message = new MessageTable(cursor.getInt(0), cursor.getString(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getInt(7));
         return message;
     }
     
@@ -388,7 +416,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         if (cursor != null)
             cursor.moveToFirst();
      
-        MessageTable message = new MessageTable(cursor.getLong(0), cursor.getDouble(1), cursor.getDouble(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
+        MessageTable message = new MessageTable(cursor.getString(0), cursor.getDouble(1), cursor.getDouble(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         // return message
         return message;
     }

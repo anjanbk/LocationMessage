@@ -44,8 +44,8 @@ public class MainActivity extends FacebookActivity {
 	    //DataBaseHelper dbhelper = new DataBaseHelper(this);
 	    //dbhelper.addUser("Chandim", "Chandim", "Success");
 	    //dbhelper.addUser("Diya", "Diya", "Dummy");
-	    MessageTable message = new MessageTable(1, 5, 36, 54, "Troll", "Troll", "Diya", 2);
-	    MessageTable message2 = new MessageTable(2, 5, 36, 54, "Troll2", "Troll2", "Diya", 2);
+	    MessageTable message = new MessageTable(1, "10:30", 36, 54, "Troll", "Troll", "Diya", 2);
+	    MessageTable message2 = new MessageTable(2, "9:00", 36, 54, "Troll2", "Troll2", "Diya", 2);
 	    UserTable Receiver = new UserTable("Chandim", "Chandim", "Success");
 	    UserTable Sender = new UserTable("Diya", "Diya", "Dummy");
 	    //dbhelper.addMessage(message, Sender, Receiver);
@@ -88,6 +88,9 @@ public class MainActivity extends FacebookActivity {
         								helper.addUser(userId, userName, "");
         								helper.addUser("Chandim", "Chandim", "Success");
         							    helper.addUser("Diya", "Diya", "Dummy");
+        							    helper.addUser("Nathan", "Nathan", "Hurley");
+        							    MessageTable message = new MessageTable(1, "10:00", 36, 54, "Hi", "It's been a while, how are you?", "Diya", 2);
+        							    helper.sendMessage(message, "Nathan", user.getId());
         							}
         						}
         					}

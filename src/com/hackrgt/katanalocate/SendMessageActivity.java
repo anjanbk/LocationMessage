@@ -221,7 +221,7 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 		
 		System.out.println(timeStamp.longValue());
 		
-		MessageTable msgTable = new MessageTable(0, timeStamp.longValue(), locLat, locLong, msgSubject, msgBody, type);
+		MessageTable msgTable = new MessageTable(2, "" + timeStamp, locLat, locLong, msgSubject, msgBody, type);
 		dbHelper.sendMessage(msgTable, userId, "Chandim");
 		AlertMessage.showToastMessage("Message sent!");
 		return true;

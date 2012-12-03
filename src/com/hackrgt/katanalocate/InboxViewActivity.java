@@ -66,7 +66,7 @@ public class InboxViewActivity extends Activity{// implements OnItemClickListene
 				          if (user != null) {
 				        	  Log.d("InboxViewActivity", "Facebook ID:" + user.getId());
 				        	  Id = user.getId();
-				        	  messages = dbhelper.fillInbox("Chandim");
+				        	  messages = dbhelper.fillInbox(user.getId());
 				          	  
 				        	  for (MessageTable msg: messages)
 				        	  {

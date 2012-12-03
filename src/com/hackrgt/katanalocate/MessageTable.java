@@ -8,7 +8,7 @@ public class MessageTable {
 	//Table_Message Column Names
     
 	private int id;
-	private long dateTime;
+	private String dateTime;
 	private double locLat;
 	private double locLong;
 	private String subject;
@@ -26,7 +26,7 @@ public class MessageTable {
 	 * @param user Receiver or sender of message depending on view
 	 * @param type Determines if sent or recieved
 	 */
-	public MessageTable(int id, long dateTime, double locLat, double locLong, String subject, String message, String user, int type) {
+	public MessageTable(int id, String dateTime, double locLat, double locLong, String subject, String message, String user, int type) {
 		this.id = id;
 		this.dateTime = dateTime;
 		this.locLat = locLat;
@@ -45,7 +45,7 @@ public class MessageTable {
 	 * @param message Main content of the message
 	 * @param user Receiver or sender of message depending on view
 	 */
-	public MessageTable(long dateTime, double locLat, double locLong, String subject, String message, String user) {
+	public MessageTable(String dateTime, double locLat, double locLong, String subject, String message, String user) {
 		this.dateTime = dateTime;
 		this.locLat = locLat;
 		this.locLong = locLong;
@@ -63,7 +63,7 @@ public class MessageTable {
 	 * @param message Main content of the message
 	 * @param type Determines if sent or recieved
 	 */
-	public MessageTable(int id, long dateTime, double locLat, double locLong, String subject, String message, int type) {
+	public MessageTable(int id, String dateTime, double locLat, double locLong, String subject, String message, int type) {
 		this.id = id;
 		this.dateTime = dateTime;
 		this.locLat = locLat;
@@ -81,11 +81,11 @@ public class MessageTable {
 		return this.id;
 	}
 	
-	public void setDateTime(long dateTime) {
+	public void setDateTime(String dateTime) {
 		this.dateTime = dateTime;
 	}
 	
-	public long getDateTime() {
+	public String getDateTime() {
 		return this.dateTime;
 	}
 	
