@@ -1,6 +1,7 @@
 package com.hackrgt.katanalocate;
 
 import java.io.File;
+import java.util.Calendar;
 
 import com.facebook.FacebookActivity;
 import com.facebook.Request;
@@ -89,7 +90,8 @@ public class MainActivity extends FacebookActivity {
         								helper.addUser("Chandim", "Chandim", "Success");
         							    helper.addUser("Diya", "Diya", "Dummy");
         							    helper.addUser("Nathan", "Nathan", "Hurley");
-        							    MessageTable message = new MessageTable(1, "10:00", 36, 54, "Hi", "It's been a while, how are you?", "Diya", 2);
+        							    
+        							    MessageTable message = new MessageTable(1, ""+System.currentTimeMillis(), 36, 54, "Hi", "It's been a while, how are you?", "Diya", 2);
         							    helper.sendMessage(message, "Nathan", user.getId());
         							}
         						}
