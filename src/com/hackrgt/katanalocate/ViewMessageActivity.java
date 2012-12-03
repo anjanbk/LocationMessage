@@ -2,6 +2,8 @@ package com.hackrgt.katanalocate;
 
 
 
+import java.sql.Timestamp;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -33,7 +35,8 @@ public class ViewMessageActivity extends Activity {
 		final TextView subject = (TextView) findViewById(R.id.subject);
 		subject.setText(message.getSubject());
 		final TextView time = (TextView) findViewById(R.id.time);
-		time.setText(message.getDateTime());
+		Timestamp timeStamp = new Timestamp(Long.parseLong(message.getDateTime()));
+		time.setText(timeStamp.toString());
 		final TextView location = (TextView) findViewById(R.id.location);
 		location.setText(message.getLatitude() + " " + message.getLongitude());
 		final TextView from = (TextView) findViewById(R.id.from);
