@@ -21,9 +21,7 @@
 	<!-- Keeps the processor from sleeping when a message is received. -->
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.VIBRATE" />
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+	<uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -31,13 +29,19 @@
         android:theme="@style/AppTheme" >
         
         <uses-library android:name="com.google.android.maps" />
-        <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
+        
+        <receiver
+            android:name="com.google.android.gcm.GCMBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
 			<intent-filter>
 				<action android:name="com.google.android.c2dm.intent.RECEIVE" />
 				<action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 				<category android:name="com.hackrgt.katanalocate" />
 			</intent-filter>
 		</receiver>
+		
+        <service android:name=".GCMIntentService" />
+
         <meta-data android:value="@string/app_id" android:name="com.facebook.sdk.ApplicationId"/>
         
         <activity
@@ -74,7 +78,6 @@
         <activity android:name="com.hackrgt.katanalocate.RegisterActivity"/>
         <activity android:name="com.hackrgt.katanalocate.MapLocateActivity"/>
         
-        <service android:name="com.hackrgt.katanalocate.GCMIntentService" />
         
     </application>
 

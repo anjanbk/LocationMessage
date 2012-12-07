@@ -1,14 +1,23 @@
 package com.hackrgt.katanalocate;
  
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Button;
  
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
 import com.google.android.gcm.GCMBaseIntentService;
 
 import static com.hackrgt.katanalocate.CommonUtilities.SENDER_ID;
+import static com.hackrgt.katanalocate.CommonUtilities.TAG;
+import static com.hackrgt.katanalocate.CommonUtilities.displayMessage;
  
 public class GCMIntentService extends GCMBaseIntentService {
  
@@ -24,6 +33,20 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onRegistered(Context context, String registrationId) {
         Log.i(TAG, "Device registered: regId = " + registrationId);
+        displayMessage(context, "From GCM: device successfully registered!");
+        Session session = Session.getActiveSession();
+        final Context mContext = context;
+        final String mId = registrationId;
+        Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
+			
+			@Override
+			public void onCompleted(GraphUser user, Response response) {
+				if (user != null) {
+					ServerUtilities.register(mContext, user.getId() , mId);
+				}
+			}
+		});
+    	Request.executeBatchAsync(request);
     }
  
     /**
@@ -40,7 +63,6 @@ public class GCMIntentService extends GCMBaseIntentService {
      * */
     @Override
     protected void onMessage(Context context, Intent intent) {
-        Log.i(TAG, "Received message");
         //Get passed in data
         int id = intent.getExtras().getInt("id");
         String message = intent.getExtras().getString("message");
@@ -70,7 +92,11 @@ public class GCMIntentService extends GCMBaseIntentService {
         AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         //Set alarm every 3 minutes to call service to check if user is in location for a message
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 180*1000, pintent);
-        Log.d(TAG, message);
+        Log.d(TAG, "Received Message: " + message);
+        
+        displayMessage(context,message);
+        
+        generateNotification(context, message);
     }
  
     /**
@@ -109,16 +135,12 @@ public class GCMIntentService extends GCMBaseIntentService {
     /**
      * Issues a notification to inform the user that server has sent a message.
      */
-    /*
     private static void generateNotification(Context context, String message) {
-        int icon = R.drawable.ic_launcher;
         long when = System.currentTimeMillis();
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification = new Notification(icon, message, when);
- 
+        Notification notification = new Notification(R.drawable.com_facebook_button_check, message, when);
         String title = context.getString(R.string.app_name);
- 
         Intent notificationIntent = new Intent(context, MainActivity.class);
         // set intent so it does not start a new activity
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
@@ -127,15 +149,7 @@ public class GCMIntentService extends GCMBaseIntentService {
                 PendingIntent.getActivity(context, 0, notificationIntent, 0);
         notification.setLatestEventInfo(context, title, message, intent);
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
- 
-        // Play default notification sound
-        notification.defaults |= Notification.DEFAULT_SOUND;
- 
-        // Vibrate if vibrate is enabled
-        notification.defaults |= Notification.DEFAULT_VIBRATE;
-        notificationManager.notify(0, notification);      
- 
+        notificationManager.notify(0, notification);
     }
-    */
  
 }

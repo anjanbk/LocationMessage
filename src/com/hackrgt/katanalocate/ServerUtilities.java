@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import static com.hackrgt.katanalocate.CommonUtilities.TAG;
 import static com.hackrgt.katanalocate.CommonUtilities.SERVER_URL;
+import static com.hackrgt.katanalocate.CommonUtilities.displayMessage;
  
 import android.content.Context;
 import android.util.Log;
@@ -27,7 +28,7 @@ public final class ServerUtilities {
      * Register this account/device pair within the server.
      *
      */
-    static void register(final Context context, String name, final String regId) {
+    static boolean register(final Context context, String name, final String regId) {
         Log.i(TAG, "registering device (regId = " + regId + ")");
         String serverUrl = SERVER_URL;
         Map<String, String> params = new HashMap<String, String>();
@@ -35,27 +36,23 @@ public final class ServerUtilities {
         params.put("uname", name);
  
         long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-        // Once GCM returns a registration id, we need to register on our server
-        // As the server might be down, we will retry it a couple
+     // Once GCM returns a registration id, we need to register it in the
+        // demo server. As the server might be down, we will retry it a couple
         // times.
         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
             Log.d(TAG, "Attempt #" + i + " to register");
             try {
-                //displayMessage(context, context.getString(, i, MAX_ATTEMPTS));
-            	Log.d(TAG, "Server registering, attempt #: " + i);
+                displayMessage(context, "Registering...");
                 post(serverUrl, params);
                 GCMRegistrar.setRegisteredOnServer(context, true);
-                /*
-                String message = context.getString(R.string.server_registered);
+                String message = "Registered";
                 CommonUtilities.displayMessage(context, message);
-                */
-                Log.d(TAG, "Connected to server");
-                return;
+                return true;
             } catch (IOException e) {
                 // Here we are simplifying and retrying on any error; in a real
                 // application, it should retry only on unrecoverable errors
                 // (like HTTP error code 503).
-                Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
+                Log.e(TAG, "Failed to register on attempt " + i, e);
                 if (i == MAX_ATTEMPTS) {
                     break;
                 }
@@ -66,17 +63,15 @@ public final class ServerUtilities {
                     // Activity finished before we complete - exit.
                     Log.d(TAG, "Thread interrupted: abort remaining retries!");
                     Thread.currentThread().interrupt();
-                    return;
+                    return false;
                 }
                 // increase backoff exponentially
                 backoff *= 2;
             }
         }
-        /*
-        String message = context.getString(R.string.server_register_error,
-                MAX_ATTEMPTS);
+        String message = "Error";
         CommonUtilities.displayMessage(context, message);
-        */
+        return false;
     }
  
     /**

@@ -1,8 +1,11 @@
 package com.hackrgt.katanalocate;
 
+import static com.hackrgt.katanalocate.CommonUtilities.TAG;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,6 +28,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -152,9 +156,29 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 		else if (viewId == submitButton.getId()) {
 			msgSubject = messageSubject.getText().toString();
 			msgBody = messageBody.getText().toString();
+			Log.d("SendMessageActivity", "Submitting");
 			
-			//This will call sendMessage
-			getUserId(getApplicationContext());
+			
+			Session session = Session.getActiveSession();
+			Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
+				@Override
+				public void onCompleted(GraphUser user, Response response) {
+					if (user != null) {
+						HashMap<String, String> data = new HashMap<String,String>();
+						data.put("sender_id", user.getId());
+						data.put("receiver_id", msgRecipientId);
+						data.put("subject", messageSubject.getText().toString());
+						data.put("message", messageBody.getText().toString());
+						data.put("loclat", "" + location.getLatitude());
+						data.put("loclong", "" + location.getLongitude());
+						new SendTask(getApplicationContext(),data).execute("http://katanaserver.no-ip.org/gcm_server_php/add_message.php");
+						Log.d("SendMessageActivity", "Submitted");
+					}
+				}
+			});
+        	Request.executeBatchAsync(request);
+			
+			//getUserId(getApplicationContext());
 		}
 	}
 

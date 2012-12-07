@@ -1,11 +1,15 @@
 package com.hackrgt.katanalocate.friendslist;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.facebook.FacebookException;
 import com.facebook.Session;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
+import com.google.gson.*;
 import com.hackrgt.katanalocate.DataBaseHelper;
 import com.hackrgt.katanalocate.R;
 import com.hackrgt.katanalocate.SendMessageActivity;
@@ -14,6 +18,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
@@ -27,6 +32,7 @@ public class FriendListActivity extends Activity implements OnItemClickListener 
 	private ArrayList<String> appUsersId;
 	private DataBaseHelper dbHelper;
 	private Location location;
+	private static String TAG = "FriendListActivity";
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,10 +74,23 @@ public class FriendListActivity extends Activity implements OnItemClickListener 
 	private ArrayList<String> getAppUsersId() {
 		//TODO: Fetch user ids from database
 		ArrayList<String> usersID = new ArrayList<String>();
-		usersID.add("11111");
 		
-		usersID = (ArrayList<String>) dbHelper.fetchallUserID();
-		System.out.println(usersID);
+		try {
+			String response = new GetUsersTask().execute("http://katanaserver.no-ip.org/gcm_server_php/get_users.php").get();
+			
+			// Parse the response
+			JsonElement jelement = new JsonParser().parse(response);
+			JsonArray jarray = jelement.getAsJsonArray();
+			for (int i = 0;i < jarray.size();i++) {
+				usersID.add(jarray.get(i).getAsJsonObject().get("UserID").toString());
+			}
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
+		
 		return usersID;
 	}
 

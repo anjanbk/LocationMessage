@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.hackrgt.katanalocate.R;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ public class FriendListItemAdapter extends ArrayAdapter<Friend> {
 
 	private ArrayList<Friend> friends;
 	private ArrayList<String> appUsersId;
+	private static final String TAG = "FriendListItemAdapter";
 	
 	public FriendListItemAdapter(Context context, int textViewResourceId, ArrayList<Friend> friends) {
 		super(context, textViewResourceId, friends);
@@ -51,7 +53,7 @@ public class FriendListItemAdapter extends ArrayAdapter<Friend> {
 				
 			}
 			
-			if (friendIsAppUser(friend) || position <= 2 || friend.getName().equals("Chandim Chatterjee")) {
+			if (friendIsAppUser(friend)) {
 				//System.out.println(friend.getName()+" has the app");
 				friend.setAppUser(true);
 				
@@ -64,7 +66,7 @@ public class FriendListItemAdapter extends ArrayAdapter<Friend> {
 				hasAppIcon.setVisibility(View.VISIBLE);
 			}
 			else {
-				friend.setAppUser(false);
+				friend.setAppUser(true);
 				TextView inviteFriend = (TextView) v.findViewById(R.id.sendInvite);
 				inviteFriend.setVisibility(View.VISIBLE);
 				ImageView hasAppIcon = (ImageView) v.findViewById(R.id.hasAppIcon);
@@ -82,9 +84,12 @@ public class FriendListItemAdapter extends ArrayAdapter<Friend> {
     }
 
 	private boolean friendIsAppUser(Friend friend) {
-		for (String id : appUsersId)
-			if (id.equals(friend.getId()))
+		Log.d(TAG,friend.getId());
+		for (String id : appUsersId) {
+			if (id.equals(friend.getId())) {
 				return true;
+			}
+		}
 		//Return false if no matches found
 		return false;
 	}

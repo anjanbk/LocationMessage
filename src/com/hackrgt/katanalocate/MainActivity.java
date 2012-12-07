@@ -14,21 +14,25 @@ import com.facebook.model.GraphUser;
 import com.google.android.gcm.GCMRegistrar;
 import com.hackrgt.katanalocate.R;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends FacebookActivity {
     private MainFragment mainFragment;
     private boolean isResumed = false;
+    AsyncTask<Void, Void, Void> mRegisterTask;
     
     private void registerDevice(String fbid) {
     	GCMRegistrar.checkDevice(this);
        	//GCMRegistrar.checkManifest(context);
+    	registerReceiver(mHandleMessageReceiver, new IntentFilter("android.intent.action.MAIN"));
 	    final String regId = GCMRegistrar.getRegistrationId(this);
        	
        	if (regId.equals("")) {
@@ -46,18 +50,23 @@ public class MainActivity extends FacebookActivity {
                 // hence the use of AsyncTask instead of a raw thread.
                 final Context context = this;
                 final String name = fbid;
-                AsyncTask<Void, Void, Void> mRegisterTask = new AsyncTask<Void, Void, Void>() {
+                mRegisterTask = new AsyncTask<Void, Void, Void>() {
  
                     @Override
                     protected Void doInBackground(Void... params) {
                         // Register on our server
                     	Log.d(TAG, "Registering...");
-                        ServerUtilities.register(context,name,regId);
+                        boolean register = ServerUtilities.register(context,name,regId);
+                        
+                        if (!register) {
+                            GCMRegistrar.unregister(context);
+                        }
                         return null;
                     }
  
                     @Override
                     protected void onPostExecute(Void result) {
+                    	mRegisterTask=null;
                     }
  
                 };
@@ -96,10 +105,11 @@ public class MainActivity extends FacebookActivity {
 			});
         	Request.executeBatchAsync(request);
 	    }
-	    
+	   
 	    /*
 	     * Testing Inbox View
 	     */
+	    /*
 	    Log.d("Main Activity", "Tried to create DBHelper");
 	    //DataBaseHelper dbhelper = new DataBaseHelper(this);
 	    //dbhelper.addUser("Chandim", "Chandim", "Success");
@@ -113,7 +123,25 @@ public class MainActivity extends FacebookActivity {
 	    //dbhelper.checkMessage();
 	    //dbhelper.checkUser();
 	    //dbhelper.checkSendReceive();
+	     * 
+	     */
     }
+    
+    /**
+     * Receiving push messages
+     * */
+    private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+        	Log.d(TAG, "Message received");
+            String newMessage = intent.getExtras().getString("message");
+            WakeLocker.acquire(getApplicationContext());
+ 
+            // Showing received message
+            Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
+            WakeLocker.release();
+        }
+    };
     
     @Override
     protected void onSessionStateChange(SessionState state, Exception exception) {
@@ -166,11 +194,18 @@ public class MainActivity extends FacebookActivity {
         super.onResume();
         isResumed = true;
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        isResumed = false;
+    
+    public void onDestroy() {
+    	if (mRegisterTask != null) {
+            mRegisterTask.cancel(true);
+        }
+        try {
+            unregisterReceiver(mHandleMessageReceiver);
+            GCMRegistrar.onDestroy(this);
+        } catch (Exception e) {
+            Log.e("UnRegister Receiver Error", "> " + e.getMessage());
+        }
+        super.onDestroy();
     }
     
     @Override
