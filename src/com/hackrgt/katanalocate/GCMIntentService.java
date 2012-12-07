@@ -24,8 +24,6 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onRegistered(Context context, String registrationId) {
         Log.i(TAG, "Device registered: regId = " + registrationId);
-        // TODO: tie this with current user
-        ServerUtilities.register(context, "SampleFacebookUser", registrationId);
     }
  
     /**

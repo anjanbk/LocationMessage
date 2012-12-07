@@ -36,6 +36,7 @@ import android.widget.Toast;
  
 public class RegisterActivity extends FacebookActivity {
 	String fbName;
+	Context context;
 	
     // UI elements
     EditText txtName;
@@ -64,7 +65,7 @@ public class RegisterActivity extends FacebookActivity {
         if (session.isOpened()) {
         	
         	Log.d(TAG, "Session is opened, session: " + Session.getActiveSession().getAccessToken());
-        	/*
+        	context = this;
         	Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
 				
 				@Override
@@ -72,24 +73,17 @@ public class RegisterActivity extends FacebookActivity {
 					if (user != null) {
 						Log.d(TAG, "AsyncRequest completed: " + user.getId());
 						fbName = user.getId();
+				        btnRegister = (Button) findViewById(R.id.btnRegister);
+				 
+				        /*
+				         * Click event on Register button
+				         * */
+				       	btnRegister.setOnClickListener(new RegisterButtonOnClickListener(context, fbName));
 					}
 				}
 			});
         	Request.executeBatchAsync(request);
-			*/
-        	fbName = "632583495";
         
-	        btnRegister = (Button) findViewById(R.id.btnRegister);
-	 
-	        /*
-	         * Click event on Register button
-	         * */
-	        if (fbName != null) {
-	        	Log.d(TAG, "FB Name worked!");
-	        	btnRegister.setOnClickListener(new RegisterButtonOnClickListener(this, fbName));
-	        } else {
-	        	Log.d(TAG, "FB Name was null");
-	        }
         }
     }
     
@@ -109,7 +103,7 @@ public class RegisterActivity extends FacebookActivity {
 			
            	GCMRegistrar.checkDevice(context);
            	//GCMRegistrar.checkManifest(context);
-           	registerReceiver(mHandleMessageReceiver, new IntentFilter(DISPLAY_MESSAGE_ACTION));
+           	//registerReceiver(mHandleMessageReceiver, new IntentFilter(DISPLAY_MESSAGE_ACTION));
            	final String regId = GCMRegistrar.getRegistrationId(context);
            	
            	if (regId.equals("")) {
@@ -150,6 +144,7 @@ public class RegisterActivity extends FacebookActivity {
     	
     }
     
+    /*
     private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -164,6 +159,7 @@ public class RegisterActivity extends FacebookActivity {
             //WakeLocker.release();
         }
     };
+    */
  
     @Override
     public void onDestroy() {
@@ -171,7 +167,7 @@ public class RegisterActivity extends FacebookActivity {
             mRegisterTask.cancel(true);
         }
         try {
-            unregisterReceiver(mHandleMessageReceiver);
+            //unregisterReceiver(mHandleMessageReceiver);
             GCMRegistrar.onDestroy(this);
         } catch (Exception e) {
             Log.e("UnRegister Receiver Error", "> " + e.getMessage());

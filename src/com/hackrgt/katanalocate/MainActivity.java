@@ -1,5 +1,8 @@
 package com.hackrgt.katanalocate;
 
+import static com.hackrgt.katanalocate.CommonUtilities.SENDER_ID;
+import static com.hackrgt.katanalocate.CommonUtilities.TAG;
+
 import java.io.File;
 
 import com.facebook.FacebookActivity;
@@ -8,15 +11,60 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
+import com.google.android.gcm.GCMRegistrar;
 import com.hackrgt.katanalocate.R;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends FacebookActivity {
     private MainFragment mainFragment;
     private boolean isResumed = false;
+    
+    private void registerDevice(String fbid) {
+    	GCMRegistrar.checkDevice(this);
+       	//GCMRegistrar.checkManifest(context);
+	    final String regId = GCMRegistrar.getRegistrationId(this);
+       	
+       	if (regId.equals("")) {
+            // Registration is not present, register now with GCM
+       		Log.d(TAG, "Not registered");
+            GCMRegistrar.register(this, SENDER_ID);
+       	} else {
+            // Device is already registered on GCM
+            if (GCMRegistrar.isRegisteredOnServer(this)) {
+                // Skips registration.
+            	Log.d(TAG, "Already registered with GCM, regID: " + regId);
+            } else {
+                // Try to register again, but not in the UI thread.
+                // It's also necessary to cancel the thread onDestroy(),
+                // hence the use of AsyncTask instead of a raw thread.
+                final Context context = this;
+                final String name = fbid;
+                AsyncTask<Void, Void, Void> mRegisterTask = new AsyncTask<Void, Void, Void>() {
+ 
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        // Register on our server
+                    	Log.d(TAG, "Registering...");
+                        ServerUtilities.register(context,name,regId);
+                        return null;
+                    }
+ 
+                    @Override
+                    protected void onPostExecute(Void result) {
+                    }
+ 
+                };
+                mRegisterTask.execute(null, null, null);
+            }
+       	}
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,6 +83,18 @@ public class MainActivity extends FacebookActivity {
 	        // Restore the fragment
 	        mainFragment = (MainFragment) getSupportFragmentManager()
 	        .findFragmentById(android.R.id.content);
+	    }
+	    // Register the device with GCM, if not already registered
+	    Session session = Session.getActiveSession();
+	    if (session.isOpened()) {
+	    	Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
+				@Override
+				public void onCompleted(GraphUser user, Response response) {
+					if (user != null)
+				       	registerDevice(user.getId());
+				}
+			});
+        	Request.executeBatchAsync(request);
 	    }
 	    
 	    /*
