@@ -297,6 +297,26 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	return cursor.moveToFirst();
     }
     
+    public List<String> getMessages(double latitude, double longitude) {
+    	List<String> ret = new ArrayList<String>();
+    	
+    	String query = "SELECT * FROM Message M WHERE " +
+    			MESSAGE_LOCATIONLAT + " >= " + (latitude - 1) + " AND " + MESSAGE_LOCATIONLAT + " <= " + (latitude + 1) + " AND " +
+    			MESSAGE_LOCATIONLONG + " >= " + (longitude - 1) + " AND " + MESSAGE_LOCATIONLONG + " <= " + (longitude + 1); 
+    	
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	Cursor cursor = db.rawQuery(query, null);
+    	Log.d("DataBaseHelper", "Rows: " + cursor.getCount());
+    	if (cursor.moveToFirst()) {
+    		do {
+    			ret.add(cursor.getString(4));
+    			ret.add(cursor.getString(5));
+    		} while (cursor.moveToNext());
+    	}
+    	
+    	return ret;
+    }
+    
     //public 
     
     /*
@@ -412,7 +432,6 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     
     public DataBaseHelper(Context context) {
     	super(context, DB_NAME, null, 1);
-        Log.d("Enters Constructor: ", "Enters Constructor ..");
     }
     
     @Override

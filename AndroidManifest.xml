@@ -11,6 +11,8 @@
         
     <permission android:name="com.hackrgt.katanalocate.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
     <uses-permission android:name="com.hackrgt.katanalocate.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     
 	<!-- App receives GCM messages. -->
 	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -41,6 +43,11 @@
 		</receiver>
 		
         <service android:name=".GCMIntentService" />
+        
+        <service
+            	android:enabled="True"
+            	android:name="com.hackrgt.katanalocate.NotificationService"
+            />
 
         <meta-data android:value="@string/app_id" android:name="com.facebook.sdk.ApplicationId"/>
         

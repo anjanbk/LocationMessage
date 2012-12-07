@@ -35,8 +35,8 @@ public class ViewMessageActivity extends Activity {
 		final TextView subject = (TextView) findViewById(R.id.subject);
 		subject.setText(message.getSubject());
 		final TextView time = (TextView) findViewById(R.id.time);
-		Timestamp timeStamp = new Timestamp(Long.parseLong(message.getDateTime()));
-		time.setText(timeStamp.toString());
+		//Timestamp timeStamp = new Timestamp(message.getDateTime());
+		time.setText(message.getDateTime());
 		final TextView location = (TextView) findViewById(R.id.location);
 		location.setText(message.getLatitude() + " " + message.getLongitude());
 		final TextView from = (TextView) findViewById(R.id.from);

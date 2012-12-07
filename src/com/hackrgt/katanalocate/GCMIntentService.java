@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Button;
  
@@ -20,7 +21,7 @@ import static com.hackrgt.katanalocate.CommonUtilities.TAG;
 import static com.hackrgt.katanalocate.CommonUtilities.displayMessage;
  
 public class GCMIntentService extends GCMBaseIntentService {
- 
+	String message;
     private static final String TAG = "GCMIntentService";
  
     public GCMIntentService() {
@@ -64,6 +65,9 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onMessage(Context context, Intent intent) {
         //Get passed in data
+//    	PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+//    	PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, TAG);
+//    	wl.acquire(1000);
         int id = intent.getExtras().getInt("id");
         String message = intent.getExtras().getString("message");
         String dateTime = intent.getExtras().getString("DateTime");
@@ -80,7 +84,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         MessageTable messageObj = new MessageTable(id, dateTime, locLat, locLong, subject, message, type);
         UserTable sender = new UserTable(senderId, senderName, sGcmId);
         UserTable receiver = new UserTable(receiverId, receiverName, rGcmId);
-        
+//        wl.release();
         //Add to table of received messages
         DataBaseHelper helper = new DataBaseHelper(this);
         helper.addMessage(messageObj, sender, receiver);
@@ -92,11 +96,13 @@ public class GCMIntentService extends GCMBaseIntentService {
         AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         //Set alarm every 3 minutes to call service to check if user is in location for a message
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 180*1000, pintent);
-        Log.d(TAG, "Received Message: " + message);
         
-        displayMessage(context,message);
-        
-        generateNotification(context, message);
+        if (!message.equals(this.message)) {
+        	Log.d(TAG, "Received Message: " + message);
+	        displayMessage(context,message);
+	        
+	        generateNotification(context, message);
+        }
     }
  
     /**

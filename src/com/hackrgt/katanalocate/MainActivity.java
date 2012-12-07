@@ -12,19 +12,25 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
 import com.google.android.gcm.GCMRegistrar;
+import com.hackrgt.katanalocate.NotificationService.LocalBinder;
 import com.hackrgt.katanalocate.R;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
 
 public class MainActivity extends FacebookActivity {
+	private NotificationService mService;
+	private boolean mBound = false;
     private MainFragment mainFragment;
     private boolean isResumed = false;
     AsyncTask<Void, Void, Void> mRegisterTask;
@@ -109,23 +115,47 @@ public class MainActivity extends FacebookActivity {
 	    /*
 	     * Testing Inbox View
 	     */
-	    /*
 	    Log.d("Main Activity", "Tried to create DBHelper");
-	    //DataBaseHelper dbhelper = new DataBaseHelper(this);
+	    DataBaseHelper dbhelper = new DataBaseHelper(this);
 	    //dbhelper.addUser("Chandim", "Chandim", "Success");
 	    //dbhelper.addUser("Diya", "Diya", "Dummy");
-	    MessageTable message = new MessageTable(1, "10:30", 36, 54, "Troll", "Troll", "Diya", 2);
-	    MessageTable message2 = new MessageTable(2, "9:00", 36, 54, "Troll2", "Troll2", "Diya", 2);
-	    UserTable Receiver = new UserTable("Chandim", "Chandim", "Success");
-	    UserTable Sender = new UserTable("Diya", "Diya", "Dummy");
-	    //dbhelper.addMessage(message, Sender, Receiver);
+	    MessageTable message = new MessageTable(1, "10:30", 47.6097, -122.3331, "Message", "Hello, this is a message!", "Diya", 2);
+	    UserTable Sender = new UserTable("586525603", "Chandim Chatterjee", "gcm");
+	    UserTable Receiver = new UserTable("632583495", "Anjan Karanam", "Dummy");
+	    dbhelper.addUser("586525603", "Chandim Chatterjee", "gcm");
+	    dbhelper.addUser("632583495", "Anjan Karanam", "Dummy");
+	    dbhelper.addMessage(message, Sender, Receiver);
 	    //dbhelper.addMessage(message2, Receiver, Sender);
-	    //dbhelper.checkMessage();
-	    //dbhelper.checkUser();
-	    //dbhelper.checkSendReceive();
-	     * 
-	     */
+	    dbhelper.checkMessage();
+	    dbhelper.checkUser();
+	    dbhelper.checkSendReceive();
     }
+    
+    @Override
+    public void onStart() {
+    	super.onStart();
+    	Intent intent = new Intent(this, NotificationService.class);
+    	bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+    
+    
+ // Handles the connection to the Android Service
+    private ServiceConnection mConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			Log.d(TAG,"Service Connected");
+
+			LocalBinder binder = (LocalBinder)service;
+			mService = binder.getService();
+			mBound = true;
+		}
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			Log.d(TAG, "Service Disconnected");
+
+			mBound = false;
+		}
+    };
     
     /**
      * Receiving push messages
@@ -193,6 +223,16 @@ public class MainActivity extends FacebookActivity {
     public void onResume() {
         super.onResume();
         isResumed = true;
+    }
+    
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	
+    	if (mBound) {
+    		unbindService(mConnection);
+    		mBound = false;
+    	}
     }
     
     public void onDestroy() {

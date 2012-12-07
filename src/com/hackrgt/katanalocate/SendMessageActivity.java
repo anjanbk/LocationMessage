@@ -172,6 +172,14 @@ public class SendMessageActivity extends Activity implements OnClickListener, On
 						data.put("loclat", "" + location.getLatitude());
 						data.put("loclong", "" + location.getLongitude());
 						new SendTask(getApplicationContext(),data).execute("http://katanaserver.no-ip.org/gcm_server_php/add_message.php");
+						
+						// Also write to local sqlite database
+						MessageTable message = new MessageTable(6, "10:30", location.getLatitude(), location.getLongitude(), msgSubject, msgBody, "Diya", 2);
+					    UserTable Sender = new UserTable(user.getName(), user.getId(), "gcm");
+					    UserTable Receiver = new UserTable(msgRecipientName, msgRecipientId , "Dummy");
+					    DataBaseHelper dbhelper = new DataBaseHelper(getApplicationContext());
+					    dbhelper.addMessage(message, Sender, Receiver);
+						
 						Log.d("SendMessageActivity", "Submitted");
 					}
 				}
